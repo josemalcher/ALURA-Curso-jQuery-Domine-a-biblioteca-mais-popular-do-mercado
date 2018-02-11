@@ -89,7 +89,7 @@ Neste treinamento, utilizaremos a versão normal do jQuery, a versão 3.1.0 de d
 Para praticar o conhecimento que iremos adquirir de jQuery, iremos desenvolver a aplicação AluraTyper. O AluraTyper é um jogo que tem como objetivo medir a velocidade de digitação de seus usuários, e salvar seu recordes em um placar. Esta aplicação parece simples, mas irá envolver quase toda a biblioteca de funções do jQuery, nos fazendo passar desde o básico de manipulação de elementos até requisições assíncronas com AJAX.
 
 Depois que você fizer o download do projeto, abra-o no seu editor de textos e você deve ver a seguinte estrutura:
-
+```
 alura-typer/
 ├── public
 │   ├── css
@@ -99,7 +99,7 @@ alura-typer/
 │   │   ├── jquery.js
 │   └── principal.html
 └── servidor
-
+```
 Por enquanto vamos ignorar a pasta servidor e vamos no focar apenas na pasta public.
 
 #### Iniciando o projeto: HTML base
@@ -126,7 +126,7 @@ Nosso objetivo inicial é que o nosso contador de palavras seja atualizado de ac
 #### Começando a trabalhar com Javacript: Importando scripts
 
 Nosso primeiro passo é criar um arquivo JavaScript que conterá nosso código. Crie o arquivo main.js dentro da pasta /js:
-
+```
 alura-typer/
 ├── public
 │   ├── css
@@ -135,7 +135,7 @@ alura-typer/
 │   ├── js
 │   │   ├── main.js
 │   │   └── jquery.js
-
+```
 Devemos agora importá-lo, utilizando a tag <script> no final da tag <body>, no arquivo principal.html:
 
 ```html
@@ -284,7 +284,7 @@ https://s3.amazonaws.com/caelum-online-public/jquery-alura-typer/stages/alura-ty
 
 Para este curso precisamos fazer o download prévio do nosso projeto, que podemos baixar AQUI.
 Você deve deszipar o arquivo baixado e encontrar uma estrutura como está:
-
+```
 alura-typer/
 ├── public
 │   ├── css
@@ -295,7 +295,7 @@ alura-typer/
 │   │   └── jquery.js
 │   └── principal.html
 └── servidor
-
+```
 Neste projeto também precisamos de um editor de textos para ser o nosso ambiente de desenvolvimento, eu recomendo o Atom , mas você pode usar outra opção de sua prefêrencia, como o Sublime Text 3 ou o Visual Studio Code (Win/Mac/Linux).
 
 Também precisamos de um navegador para visualizar o resultado de nosso código, é recomendado o uso do Google Chrome.
