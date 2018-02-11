@@ -408,6 +408,248 @@ Então caso você seu website tenha um público de usuários que notadamente nã
 
 ## <a name="parte2">2.Escutando eventos com jQuery</a>
 
+### Eventos do jQuery
+
+Sejam bem-vindos a mais um capítulo do treinamento de jQuery. Nós já implementamos corretamente o contador de palavras da frase a ser digitada e o próximo passo é disponibilizarmos um campo na página para o usuário poder digitar nele, para começarmos a ter uma interatividade com o jogo, já que atualmente nosso jogo somente conta as palavras.
+
+Vamos colocar um textarea para o usuário digitar a frase e dois contadores, um para contar quantos caracteres o usuário digitou, e outro para contar quantas palavras foram digitadas.
+Então, na página principal.html, logo após a ul de informações, colocamos o textarea:
+```html
+<textarea class="campo-digitacao" rows="8" cols ="40"></textarea>
+```
+
+E logo abaixo, criamos uma ul (semelhante à que já temos) com duas lis, cada uma representando um contador:
+
+```html
+<ul>
+    <li><span id="contador-caracteres">0</span> caracteres</li>
+    <li><span id="contador-palavras">0</span> palavras</li>
+</ul>
+```
+
+### Trabalhando com eventos
+
+O usuário já consegue digitar a frase no campo específico, mas os contadores permanecem zerados. Podemos fazer com que os contadores sejam atualizados toda vez que o usuário clicar no textarea, contando assim os caracteres e palavras já digitados e atualizando os respectivos spans.
+
+Para fazer isso, temos que entender os famosos eventos do JavaScript. Como vocês já sabem, o JavaScript possui uma série de eventos, como um evento para click, double click, scroll, entre outras interatividades, e o jQuery nos facilita muito a escutar os eventos JavaScript dos nossos elementos.
+
+Para comprovar isso, vamos utilizá-lo no caso acima, para atualizar os contadores toda vez que o usuário clicar no textarea. Vamos passo a passo. Primeiramente, no main.js, se queremos detectar um evento de clique no campo, primeiro devemos selecioná-lo:
+
+```javascript
+var campo = $(".campo-digitacao");
+```
+
+Agora, quando o campo for clicado, temos que "fazer alguma coisa". Essa ação de "quando o campo for..." faz referência à função on do jQuery, e como queremos o evento do clique no campo, passamos "click" para a função:
+
+```javascript
+var campo = $(".campo-digitacao");
+campo.on("click");
+```
+
+E para "fazer algo" quando o campo for clicado, passamos um segundo parâmetro para a função on, passamos uma função, a já conhecida função anônima:
+
+```javascript
+var campo = $(".campo-digitacao");
+campo.on("click", function() {
+
+});
+```
+
+Dentro da função anônima, iremos implementar o que queremos que aconteça quando clicarem no campo. Toda vez que clicarem no campo, essa função será chamada. Para comprovar isso, podemos imprimir uma mensagem no console do navegador toda vez que o campo for clicado, para isso colocamos um console.log dentro da função:
+
+```javascript
+var campo = $(".campo-digitacao");
+campo.on("click", function() {
+    console.log("Cliquei no campo");
+});
+```
+
+Atualizamos a página, abrimos o console do navegador e vemos que toda vez que clicamos no campo, a mensagem "Cliquei no campo" é exibida. Com isso, podemos partir para o nosso objetivo, que é contar as palavras. Nós já vimos anteriormente que uma boa maneira de contarmos as palavras, é pegar o conteúdo do campo, fazer um split nele no espaço e pegar o seu tamanho. Podemos utilizar essa mesma tática aqui, mas como pegar o valor do textarea?
+
+No caso do textarea, o seu conteúdo não estará na propriedade text e sim no value, ou val, que é como o jQuery o chama:
+
+```javascript
+var campo = $(".campo-digitacao");
+campo.on("click", function() {
+    console.log(campo.val());
+});
+```
+
+Agora toda vez que clicamos no campo, o seu conteúdo é impresso no console. Lembrando que o val nos dá acesso ao que está dentro de uma tag de input, como as tags input e textarea; já o text nos dá acesso ao que está dentro de uma tag de texto, como p, span e h1.
+
+#### Contando os caracteres e as palavras digitadas
+Agora que já sabemos como o val funciona (que é o conteúdo da nossa frase), podemos fazer o split nele e contar as palavras:
+
+```javascript
+var campo = $(".campo-digitacao");
+campo.on("click", function() {
+    var conteudo = campo.val();
+    var qtdPalavras = conteudo.split(" ").length;
+});
+```
+
+Para testar, vamos imprimir a quantidade de palavras para ver se estamos contando corretamente:
+```javascript
+var campo = $(".campo-digitacao");
+campo.on("click", function() {
+    var conteudo = campo.val();
+    var qtdPalavras = conteudo.split(" ").length;
+    console.log(qtdPalavras);
+});
+```
+
+Aparentemente está funcionando, a cada clique no campo, é impresso a quantidade de palavras nele escritas. Mas não basta só contar as palavras, temos que atualizar o seu contador, ou seja, temos que selecionar o span e alterar o seu text, atribuindo a quantidade de palavras a ele:
+
+```javascript
+var campo = $(".campo-digitacao");
+campo.on("click", function() {
+    var conteudo = campo.val();
+    var qtdPalavras = conteudo.split(" ").length;
+
+    $("#contador-palavras").text(qtdPalavras);
+});
+```
+
+Podemos escrever a frase, e a cada clique o contador é atualizado corretamente! Ótimo, agora só falta contar os caracteres, que é mais fácil ainda, é só pegarmos o conteúdo do campo, e o seu tamanho (length) será a quantidade de caracteres. Sabendo disso, podemos também atualizar o seu contador:
+
+```javascript
+var campo = $(".campo-digitacao");
+campo.on("click", function() {
+    var conteudo = campo.val();
+
+    var qtdPalavras = conteudo.split(" ").length;
+    $("#contador-palavras").text(qtdPalavras);
+
+    var qtdCaracteres = conteudo.length;
+    $("#contador-caracteres").text(qtdCaracteres);
+});
+```
+
+#### O evento input
+
+Pronto, só que para atualizar os contadores, estamos tendo sempre que clicar dentro do campo, o que não é nada legal, o ideal é que o contador seja atualizado enquanto o usuário digita. E para isso existe um evento específico de quando digitamos, colocamos dados em um campo, que é o evento input:
+
+```javascript
+var campo = $(".campo-digitacao");
+campo.on("input", function() {
+    var conteudo = campo.val();
+
+    var qtdPalavras = conteudo.split(" ").length;
+    $("#contador-palavras").text(qtdPalavras);
+
+    var qtdCaracteres = conteudo.length;
+    $("#contador-caracteres").text(qtdCaracteres);
+});
+```
+
+Repare que agora, enquanto digitamos, o campo vai sendo atualizado, e era justamente isso que queríamos.
+
+#### Separando através de Regexp
+
+A contagem tanto das palavras quanto dos caracteres aparentemente está funcionando, mas se olharmos atentamente podemos reparar que se apagarmos alguma frase escrita, o contador de palavras ainda conta uma, além disso, se dermos vários espaços, o contador conta como se cada espaço equivalesse a uma palavra. Isso tem relação com o modo que estamos contando as palavras, fazendo um split em um espaço vazio.
+Para contar mais precisamente temos que utilizar uma expressão regular no lugar do espaço vazio, uma expressão regular que busca qualquer caractere, exceto espaço vazio, essa expressão é /\S+/:
+
+```javascript
+var campo = $(".campo-digitacao");
+campo.on("input", function() {
+    var conteudo = campo.val();
+
+    var qtdPalavras = conteudo.split(/\S+/).length;
+    $("#contador-palavras").text(qtdPalavras);
+
+    var qtdCaracteres = conteudo.length;
+    $("#contador-caracteres").text(qtdCaracteres);
+});
+```
+
+Agora os espaços não são mais considerados como palavras, mas a contagem sempre mostra a quantidade de palavras mais uma, para resolver isso vamos subtrair um do length do conteúdo:
+
+```javascript
+var campo = $(".campo-digitacao");
+campo.on("input", function() {
+    var conteudo = campo.val();
+
+    var qtdPalavras = conteudo.split(/\S+/).length - 1;
+    $("#contador-palavras").text(qtdPalavras);
+
+    var qtdCaracteres = conteudo.length;
+    $("#contador-caracteres").text(qtdCaracteres);
+});
+```
+
+#### Mãos na massa: Contando através de eventos
+
+Contando através de eventos
+
+Vamos adicionar uma textarea à nossa página e começar a trabalhar com eventos. Mãos à obra :)
+
+1) Abra o arquivo public/principal.html e adicione uma textara e um ul, logo após a ul de informações:
+```html
+<textarea class="campo-digitacao" rows="8" cols ="40"></textarea>
+
+<ul>
+    <li><span id="contador-caracteres">0</span> caracteres</li>
+    <li><span id="contador-palavras">0</span> palavras</li>
+</ul>
+```
+
+2) Vamos adicionar um evento ao nosso campo-digitacao. Abra o arquivo public/js/main.js e coloque no final:
+```javascript
+var campo = $(".campo-digitacao");
+campo.on("input", function() {
+
+
+});
+```
+
+Selecionamos o campo pelo nome da classe e já associamos o evento input com ele.
+
+3) Dentro da função anônima do evento recupere o valor (val()) do campo, conta as palavras usando a função split(..) e imprime no console.
+```javascript
+var conteudo = campo.val();
+var qtdPalavras = conteudo.split(/\S+/).length - 1;
+$("#contador-palavras").text(qtdPalavras);
+
+```
+
+Você já pode testar esse código no navegador. O contador de palavras deve mostrar a quantidade de palavras.
+
+4) Logo após do $("#contador-palavras") atualize também o contador de caracteres: 
+
+```javascript
+var qtdCaracteres = conteudo.length;
+$("#contador-caracteres").text(qtdCaracteres);
+```
+
+5) Salve e teste o seu código no navegador:
+
+
+#### Mãos na massa: Contando através de eventos
+ 
+Segue o código completo do arquivo main.js:
+```javascript
+var frase = $(".frase").text();
+var numPalavras  = frase.split(" ").length;
+var tamanhoFrase = $("#tamanho-frase");
+
+tamanhoFrase.text(numPalavras);
+
+
+var campo = $(".campo-digitacao");
+campo.on("input", function() {
+    var conteudo = campo.val();
+    var qtdPalavras = conteudo.split(/\S+/).length - 1;
+    console.log(qtdPalavras);
+    $("#contador-palavras").text(qtdPalavras);
+
+    var qtdCaracteres = conteudo.length;
+    $("#contador-caracteres").text(qtdCaracteres);
+
+});
+
+```
+
+
 
 [Voltar ao Índice](#indice)
 
