@@ -919,6 +919,677 @@ campo.one("focus", function() {
 
 ## <a name="parte4">4.Reiniciando nosso jogo</a>
 
+### Código atal
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Alura Typer</title>
+</head>
+
+<body>
+    <h1>Alura Typer</h1>
+    <p class="frase">Esta frase tem varias e varias palavras. Esta frase tem varias e varias palavras</p>
+    <ul class="informacoes">
+        <li>
+            <span id="tamanho-frase">5</span> palavras</li>
+        <li><span id="tempo-digitacao">10</span> segundos</li>
+    </ul>
+
+    <textarea class="campo-digitacao" rows="8" cols="40"></textarea>
+    <button id="botao-reiniciar">Reiniciar Jogo</button>
+
+    <ul>
+        <li>
+            <span id="contador-caracteres">0</span> caracteres</li>
+        <li><span id="contador-palavras">0</span> palavras</li>
+    </ul>
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
+```
+
+```javascript
+var tempoInicial = $("#tempo-digitacao").text();
+var campo = $(".campo-digitacao");
+
+//$(document).readyState(function(){
+$(function(){
+    atualizaTamanhoFrase();
+    inicializaContadores();
+    inicializaCronometro();
+    $("#botao-reiniciar").click(reinicializaJogo) ;
+});
+
+function atualizaTamanhoFrase() {
+    var frase = $(".frase").text();
+    var numPalavras = frase.split(" ").length;
+    var tamanhoFrase = $("#tamanho-frase");
+    tamanhoFrase.text(numPalavras);
+}
+
+function inicializaContadores() {
+    campo.on("input", function () {
+        var conteudo = campo.val();
+
+        var qtdPalavras = conteudo.split(/\S+/).length - 1;
+        $("#contador-palavras").text(qtdPalavras);
+
+        var qtdCaracteres = conteudo.length;
+        $("#contador-caracteres").text(qtdCaracteres);
+    });
+}
+
+function inicializaCronometro() {
+    var tempoRestante = $("#tempo-digitacao").text();
+    campo.one("focus", function () {
+        var cronometroID = setInterval(function () {
+            tempoRestante--;
+            //console.log(tempoRestante);
+            $("#tempo-digitacao").text(tempoRestante);
+            if (tempoRestante < 1) {
+                campo.attr("disabled", true);
+                clearInterval(cronometroID);
+            }
+        }, 1000);
+    });
+}
+
+/* $("#botao-reiniciar").on("click", function(){
+    console.log("BOão Clicado");
+}); */
+/* 
+$("#botao-reiniciar").click(function () {
+    //console.log("Botão clicando com .click()");
+}); */
+function reinicializaJogo() {
+    campo.attr("disabled", false);
+    campo.val("");
+    $("#contador-palavras").text("0");
+    $("#contador-caracteres").text("0");
+    $("#tempo-digitacao").text(tempoInicial);
+    inicializaCronometro();
+}
+
+```
+
+### Reiniciando o jogo
+
+Queremos dar a opção do nosso usuário reiniciar o nosso jogo sem ter que recarregar a página, e para isto vamos implementar um pequeno botão, que ao ser clicado, vai zerar os nosso campos e contadores, permitindo o usuário iniciar uma nova rodada no jogo.
+
+Como primeiro passo, vamos adicionar um <button> no nosso HTML, abaixo da <textarea>:
+```html
+<!-- Restante do HTML -->
+
+<textarea class="campo-digitacao" rows="8" cols="40"></textarea>
+<button id="botao-reiniciar">Reiniciar Jogo</button>
+
+<!-- Restante do HTML -->
+```
+
+Agora precisamos atrelar um evento de click neste botão recém criado. Até agora , vimos como fazer isto através da função on("click",function(){...}) do jQuery, porém vamos aprender um novo modo de ter acesso a este evento.
+
+#### Um atalho para função on("click"), a shorthand click()
+
+Os eventos do Javascript que são mais comuns, como o click, blur( evento de sair de um campo), dblclick(Clique duplo) tem funções próprias no jQuery, que são funções de atalho, evitando precisar chamar a função on() e chamando diretamente a função do próprio evento.
+Veja no exemplo abaixo, aonde capturamos o evento de click em um título e exibimos uma mensagem no console como resposta:
+```javascript
+var titulo = $("#titulo");
+titulo.on("click",function(){
+    console.log("Titulo foi clicado!");
+});
+```
+
+Poderíamos executar este mesmo evento e ação com a função de atalho click():
+
+```javascript
+var titulo = $("#titulo");
+titulo.click(function(){
+    console.log("Titulo foi clicado!");
+});
+```
+
+Podemos ser mais sucintos ainda e escrever tudo em uma linha só:
+
+```javascript
+$("#titulo").click(function(){
+    console.log("Titulo foi clicado!");
+});
+```
+
+Como o jQuery é uma grande ajuda na produtividade, ele disponibiliza algumas dessas funções de atalho, que são mais curtas e simples para agilizar a vida do programador.
+Vamos atrelar um evento de click no nosso botão com está nova função:
+
+```javascript
+//main.js
+
+$("#botao-reiniciar").click(function(){
+    console.log("Reiniciando o jogo...");
+});
+```
+
+#### Reiniciando o jogo: tratando do campo
+
+Agora que estamos detectando o evento de click no botão reiniciar, vamos começar a retornar o jogo para estado inicial, como se o usuário estivesse acabado de entrar na página. O primeiro passo é habilitarmos o campo novamente, pois quando colocamos o atributo disabled nele na hora do Game Over impedimos o usuário de digitar.
+Para removê-lo, vamos nos aproveitar da função .attr() do jQuery:
+```javascript
+//main.js
+
+$("#botao-reiniciar").click(function(){
+    campo.attr("disabled", false);
+});
+```
+
+A função .attr() nos permite colocar, retirar ou modificar valores de atributos de elementos HTML.
+
+Agora com o campo digitável, precisamos zera-lo, pois ele ainda contêm os resquicíos da ultima jogada do nosso usuário. Queremos que o conteúdo da <textarea> seja zerado, fique vazio.
+
+Sabemos que para manipular o conteúdo de um elemento de input do usuário, como a <textarea>, temos que utilizar a função .val(), e como queremos que ela fique vazia , faremos assim:
+```javascript
+//main.js
+
+$("#botao-reiniciar").click(function(){
+    campo.attr("disabled", false);
+    campo.val("");
+});
+```
+
+Colocando o conteúdo(.val()) do campo como vazio(""), ele ficará zerado.
+Agora nosso campo está limpo e pode ser digitado novamente.
+
+#### Reiniciando o jogo: zerando os contadores
+
+Nosso próximo passo é retornar os contadores para seu estado inicial, ou seja, com zero palavras.
+
+Este é mais fácil, basta selecionar os dois contadores e substituir o texto dos <span> por 0.
+
+```javascript
+//main.js
+
+$("#botao-reiniciar").click(function(){
+    campo.attr("disabled", false);
+    campo.val("");
+    $("#contador-palavras").text("0");
+    $("#contador-caracteres").text("0");
+});
+```
+
+Com os contadores zerados, fica faltando apenas ajustar o tempo inicial!
+
+#### Reiniciando o jogo: restaurando o tempo inicial
+
+Para obtermos o tempo inicial, temos que guarda-lo numa variável assim que iniciamos a aplicação, pois como alteramos o valor do tempo depois, acabamos perdendo-o. Vamos criar uma variável chamada tempoInicial e capturar o valor assim que o script foi carregado:
+
+```javascript
+//main.js
+var tempoInicial = $("#tempo-digitacao").text();
+
+// Resto do código
+```
+
+Agora que temos o valor do tempo inicial, podemos reatribui-lo ao marcador de tempo quando clicarmos no botão de reiniciar:
+
+```javascript
+//main.js
+
+$("#botao-reiniciar").click(function(){
+    campo.attr("disabled", false);
+    campo.val("");
+    $("#contador-palavras").text("0");
+    $("#contador-caracteres").text("0");
+    $("#tempo-digitacao").text(tempoInicial);
+});
+```
+
+Agora o tempo inicial é restaurado corretamente.
+
+#### Reiniciando o jogo: atrelando o evento de focus ao campo
+
+Nosso botão reiniciar está quase funcionando completamente, ele já zera os campos e contadores, e restaura o tempo inicial! No entanto, ao testar o botão, percebemos que o jogo não será reinicializado.
+
+O problema é que o evento input do campo foi associando apenas uma vez (one) pelo nosso código. Para resolver bastaria reatrelar um novo evento de focus ao campo, que fará o trabalho do cronômetro. O nosso evento de focus deve ser atribuído novamente com a função one do jQuery, pois como vimos só queremos que ele seja executado uma única vez.
+Para fazer isto, poderíamos simplesmente copiar e colar o código que implementa o cronometro. Lembrando do código que você já escreveu:
+
+```javascript
+var tempoRestante = $("#tempo-digitacao").text();
+campo.one("focus",function(){
+    var cronometroID = setInterval(function(){
+        tempoRestante--;
+        $("#tempo-digitacao").text(tempoRestante);
+        if(tempoRestante < 1){
+            campo.attr("disabled", true);
+            clearInterval(cronometroID);
+        }
+    },1000);
+});
+```
+
+Poderíamos usar esse código dentro da função de click() do botão reiniciar, porém isto seria uma má prática de programação, pois estaríamos colando código repetido em dois lugares diferentes!
+
+Sabemos que podemos reaproveitar este pedaço de código caso ele estivesse mais modularizado e organizado em funções. Como nosso código está crescendo muito, agora é uma boa hora de fazer esta separação de responsabilidades.
+
+### Organizando o nosso código em funções
+
+Vamos separar cada bloco de código em uma função com um nome bem semântico, que especifique o que aquele bloco de código fará. Vamos começar pelo topo do arquivo main.js, aonde temos este bloco de código:
+
+```javascript
+var frase = $(".frase").text();
+var numPalavras  = frase.split(" ").length;
+var tamanhoFrase = $("#tamanho-frase");
+tamanhoFrase.text(numPalavras);
+```
+
+Vemos que ele é responsável por atualizar o tamanho da frase, logo vamos envolvê-lo numa função de mesmo nome:
+
+```javascript
+function atualizaTamanhoFrase() {
+    var frase = $(".frase").text();
+    var numPalavras  = frase.split(" ").length;
+    var tamanhoFrase = $("#tamanho-frase");
+    tamanhoFrase.text(numPalavras);
+}
+```
+
+Continuando a olhar o arquivo main.js, vemos o trecho abaixo:
+```javascript
+var campo = $(".campo-digitacao");
+campo.on("input",function(){
+    var conteudo = campo.val();
+
+    var qtdPalavras = conteudo.split(/\S+/).length;
+    $("#contador-palavras").text(qtdPalavras);
+
+    var qtdCaracteres = conteudo.length;
+    $("#contador-caracteres").text(qtdCaracteres);
+});
+```
+
+Claramente aqui temos outro bloco de função, já que este pedaço de código é inteiramente responsável por inicializar os contadores de palavras e caracteres. Vamos deixar a variável campo em separada no topo do main.js, pois ela é utilizada em vários locais e vamos envolver este bloco em uma função:
+
+```javascript
+//var campo fica no topo da página
+function inicializaContadores() {
+    campo.on("input",function(){
+        var conteudo = campo.val();
+
+        var qtdPalavras = conteudo.split(/\S+/).length;
+        $("#contador-palavras").text(qtdPalavras);
+
+        var qtdCaracteres = conteudo.length;
+        $("#contador-caracteres").text(qtdCaracteres);
+    });
+}
+```
+
+Continuando a olhar o main.js vamos encontrar mais um bloco que já precisamos que se tornasse uma função, o bloco que inicializa o cronometro para marcar o tempo:
+
+```javascript
+var tempoRestante = $("#tempo-digitacao").text();
+campo.one("focus", function() {
+    var cronometroID = setInterval(function() {
+        tempoRestante--;
+        $("#tempo-digitacao").text(tempoRestante);
+        if (tempoRestante < 1) {
+            campo.attr("disabled", true);
+            clearInterval(cronometroID);
+        }
+    }, 1000);
+});
+```
+
+Vamos envolvê-lo em uma função:
+```javascript
+function inicializaCronometro() {
+    var tempoRestante = $("#tempo-digitacao").text();
+    campo.one("focus", function() {
+        var cronometroID = setInterval(function() {
+            tempoRestante--;
+            $("#tempo-digitacao").text(tempoRestante);
+            if (tempoRestante < 1) {
+                campo.attr("disabled", true);
+                clearInterval(cronometroID);
+            }
+        }, 1000);
+    });
+}
+```
+
+Por último o nosso código recém escrito, que tem como função reiniciar o nosso jogo. Vamos separar a função seletora da função de reiniciar e também separa-lo em uma função com nome semântico:
+
+```javascript
+$("#botao-reiniciar").click(reiniciaJogo);
+function reiniciaJogo(){
+    campo.attr("disabled",false);
+    campo.val("");
+    $("#contador-palavras").text("0");
+    $("#contador-caracteres").text("0");
+    $("#tempo-digitacao").text(tempoInicial);
+}
+```
+
+Agora sim nosso código está bem mais organizado e modularizado, com blocos de função com responsabilidades bem definidas.
+Podemos agora chamar a função inicializaCronometro dentro da reiniciaJogo, já que agora são código reaproveitáveis:
+```javascript
+$("#botao-reiniciar").click(reiniciaJogo);
+function reiniciaJogo(){
+    campo.attr("disabled",false);
+    campo.val("");
+    $("#contador-palavras").text("0");
+    $("#contador-caracteres").text("0");
+    $("#tempo-digitacao").text(tempoInicial);
+    // Adicionamos aqui \/
+    inicializaCronometro();
+}
+```
+
+Graças a nossa separação podemos fazer o reuso de uma mesma função em diversos pedaços do código.
+
+#### Código organizado...mas funcionando?
+
+Conseguimos separar nosso código em diversas funções, com nomes bem claros que especificam suas funcionalidades, porém se você abrir a página, verá que o nosso jogo Alura Typer não está mais funcionando como deveria! Ele não conta palavras, os eventos não são atribuídos e tudo que foi feito até agora parou de funcionar.
+
+Como agora todo nosso código está isolado dentro de funções, precisamos que alguém invoque estas funções para que elas sejam executadas! Afinal nossos eventos só serão atrelados aos elementos HTML quando nossas funções forem chamadas!
+
+Para fazer isto, vamos utilizar uma função do jQuery que aguarda a página ser carregada e depois executa seu conteúdo: a função $(document).ready()
+Sabemos que para que o Javascript manipule uma página com segurança ele deve aguardar todos os seus elementos serem carregados, e é exatamente ai que a função $(document).ready() vai entrar. Vamos coloca-la no nosso código e assim que a página for carregada ela irá executar nossas funções para nós:
+
+```javascript
+//main.js
+$(document).ready(function(){
+    atualizaTamanhoFrase();
+    inicializaContadores();
+    inicializaCronometro();
+    $("#botao-reiniciar").click(reiniciaJogo);
+});
+```
+
+#### Vamo aproveitar e atrelar o evento quando da função iniciar dentro dela também.
+
+Como está é uma função bastante utilizada do jQuery, ela também tem um atalho , que é a função chamada deste modo : $(function() { ... }); . Quando passamos uma função dentro da função $() , estamos na verdade utilizando a função $(document).ready(). Como é mais prático utilizar este segundo modo, vamos alterar nosso código:
+
+```javascript
+//main.js
+$(function(){
+    atualizaTamanhoFrase();
+    inicializaContadores();
+    inicializaCronometro();
+    $("#botao-reiniciar").click(reiniciaJogo);
+});
+```
+
+Conferindo a organização
+Depois de separada e organizado, nosso código deve deste modo:
+
+```javascript
+//main.js
+var tempoInicial = $("#tempo-digitacao").text();
+var campo = $("#campo-digitacao");
+
+$(function(){
+    atualizaTamanhoFrase();
+    inicializaContadores();
+    inicializaCronometro();
+    $("#botao-reiniciar").click(reiniciaJogo);
+});
+
+function atualizaTamanhoFrase(){
+    ...
+}
+function inicializaContadores(){
+    ...
+}
+function inicializaCronometro(){
+    ...
+}
+function reiniciaJogo(){
+    ...
+}
+```
+
+Apesar deste pequeno trabalho inicial de organizar o código, daqui pra frente mantê-lo será muito mais fácil, pois agora podemos usar e abusar de nossas funções para reaproveitar bastante as funcionalidades.
+
+E nossa função de reiniciar funciona corretamente, fazendo com que nosso usuário possa jogar o AluraTyper repetidas vezes sem precisar apelar para o botão F5!
+
+
+### Mãos na massa: Botão para reinicializar o jogo
+
+####Criando o botão reiniciar
+
+1) Como primeiro passo, adicione um <button> na página principal.html, logo abaixo da <textarea>:
+```html
+<button id="botao-reiniciar">Reiniciar Jogo</button>
+```
+
+2) No arquivo main.js atrele o evento de click com no nosso botão. Dentro da função do evento reative o o campo pela função attr:
+```javascript
+$("#botao-reiniciar").click(function(){
+    campo.attr("disabled", false);
+    //aqui vem mais
+});
+```
+3) Ainda na função do evento reinicie o campo, o contador-palavras e o contador-caracteres:
+```javascript
+$("#botao-reiniciar").click(function(){
+    campo.attr("disabled", false);
+    //inicializando os campos
+    campo.val("");
+    $("#contador-palavras").text("0");
+    $("#contador-caracteres").text("0");
+});
+```
+4) Falta ainda reinicializar o tempo inicial. Vamos guardar o tempoInicial em uma variável auxiliar. No início do arquivo main.js, logo após tamanhoFrase.text(numPalavras); adicione:
+```javascript
+var tempoInicial = $("#tempo-digitacao").text();
+```
+5) Agora use esssa variável dentro da função do evento click do nosso botão:
+```javascript
+$("#botao-reiniciar").click(function(){
+    campo.attr("disabled", false);
+    campo.val("");
+    $("#contador-palavras").text("0");
+    $("#contador-caracteres").text("0");
+
+    $("#tempo-digitacao").text(tempoInicial); //novo
+
+});
+```
+
+Isso faz que o tempo inicial volte ao elemento tempo-digitacao.
+
+6) Salve tudo e teste no navegador. O botão já deve reinicializar os valores. 
+No entanto ainda não está 100%. Qual é o problema?.
+
+### Mãos na massa: Organizando o código
+
+Objetivo desse exercício é separar cada bloco de código em uma função e resolver o problema de reinicialização do jogo. Muito cuidado nesse exercício para realmente usar o mesmo código dentro das funções.
+
+1) Envolva as variáveis frase, numPalavras e a inicicialização da tamanhoFrase dentro de uma função atualizaTamanhoFrase:
+```javascript
+function atualizaTamanhoFrase() {
+    var frase = $(".frase").text();
+    var numPalavras  = frase.split(" ").length;
+    var tamanhoFrase = $("#tamanho-frase");
+    tamanhoFrase.text(numPalavras);
+}
+```
+
+2) Envolva o evento input do campo dentro de uma função inicializaContadores:
+```javascript
+function inicializaContadores() {
+    campo.on("input", function() {
+        var conteudo = campo.val();
+
+        var qtdPalavras = conteudo.split(/\S+/).length - 1;
+        $("#contador-palavras").text(qtdPalavras);
+
+        var qtdCaracteres = conteudo.length;
+        $("#contador-caracteres").text(qtdCaracteres);
+
+    });
+}
+```
+
+Cuidado, repare que a inicialização da variável campo não ficou nessa função!
+3) Agora envolva a variável tempoRestante junto com o evento focus do campo dentro de uma função inicializaCronometro:
+```javascript
+function inicializaCronometro() {
+    var tempoRestante = $("#tempo-digitacao").text();
+    campo.one("focus", function() {
+        var cronometroID = setInterval(function() {
+            tempoRestante--;
+            $("#tempo-digitacao").text(tempoRestante);
+            if (tempoRestante < 1) {
+                campo.attr("disabled", true);
+                clearInterval(cronometroID);
+            }
+        }, 1000);
+    });
+}
+```
+
+4) O nosso nosso botão para reiniciar vai receber na função click o nome da função:
+
+```javascript
+$("#botao-reiniciar").click(reiniciaJogo);
+```
+Todo o código que estava dentro da função do evento click deve estar dentro da função reiniciaJogo:
+```javascript
+function reiniciaJogo(){
+    campo.attr("disabled",false);
+    campo.val("");
+    $("#contador-palavras").text("0");
+    $("#contador-caracteres").text("0");
+    $("#tempo-digitacao").text(tempoInicial);
+    inicializaCronometro(); //novo
+}
+```
+
+Repare que já estamos chamando a função inicializaCronometro dentro da função reiniciaJogo. 
+
+5) Como agora todo nosso código está isolado dentro de funções, precisamos que alguém invoque estas funções para que elas sejam executadas! nções forem chamadas!
+Para fazer isto, vamos utilizar uma função do jQuery que aguarda a página ser carregada e depois executa seu conteúdo: a função $(document).ready()
+Para tal, adicione no ínicio da página logo após da declaração das variaveis já existentes:
+```javascript
+//as duas vars já devem existir
+var campo = $(".campo-digitacao");
+var tempoInicial = $("#tempo-digitacao").text();
+
+//nova funcao
+$(function(){
+    atualizaTamanhoFrase();
+    inicializaContadores();
+    inicializaCronometro();
+    $("#botao-reiniciar").click(reiniciaJogo);
+});
+
+//outras funções omitidas
+```
+6) Salve e teste o seu código! 
+
+Objetivo desse exercício foi organizar o nosso código em funções para deixar mais claro e mais reutilizável.
+A refatoração valeu a pena no nosso código mas foi algo mais difícil de acompanhar, por isso estamos colocando o código do arquivo main.js para sua comparação:
+```javascript
+var campo = $(".campo-digitacao");
+var tempoInicial = $("#tempo-digitacao").text();
+
+$(function(){
+    atualizaTamanhoFrase();
+    inicializaContadores();
+    inicializaCronometro();
+    $("#botao-reiniciar").click(reiniciaJogo);
+});
+
+
+function atualizaTamanhoFrase() {
+
+    var frase = $(".frase").text();
+    var numPalavras  = frase.split(" ").length;
+    var tamanhoFrase = $("#tamanho-frase");
+    tamanhoFrase.text(numPalavras);
+}
+
+function inicializaContadores() {
+
+    campo.on("input", function() {
+        var conteudo = campo.val();
+
+        var qtdPalavras = conteudo.split(/\S+/).length - 1;
+        $("#contador-palavras").text(qtdPalavras);
+
+        var qtdCaracteres = conteudo.length;
+        $("#contador-caracteres").text(qtdCaracteres);
+
+    });
+}
+
+function inicializaCronometro() {
+
+    var tempoRestante = $("#tempo-digitacao").text();
+    campo.one("focus", function() {
+        var cronometroID = setInterval(function() {
+            tempoRestante--;
+            $("#tempo-digitacao").text(tempoRestante);
+            if (tempoRestante < 1) {
+                campo.attr("disabled", true);
+                clearInterval(cronometroID);
+            }
+        }, 1000);
+    });
+}
+
+$("#botao-reiniciar").click(reiniciaJogo);
+
+function reiniciaJogo(){
+    campo.attr("disabled", false);
+    campo.val("");
+    $("#contador-palavras").text("0");
+    $("#contador-caracteres").text("0");
+
+    $("#tempo-digitacao").text(tempoInicial);
+    inicializaCronometro();
+}
+```
+
+### (Opcional) Desabilitando o botão na hora certa
+O nosso botão reiniciar funciona corretamente, porém ele fica habilitado enquanto o usuário está jogando e o tempo passando, e caso ele clique no botão, o cronômetro irá tentar reiniciar e acontecerá um bug! Faça o teste aí.
+
+Para resolver isto, podemos desabilitar o botão de reiniciar caso o usuário dê início ao jogo e o crônometro comece a descer, depois, ao fim do jogo, podemos reabilitar o botão novamente para o usuário poder reiniciá-lo.
+
+Para desabilitar o botão, basta adicionar o atributo disabled nele, algo que já sabemos fazer. Dentro da função inicializaCronometro, no evento de focus:
+```javascript
+function inicializaCronometro() {
+    var tempoRestante = $("#tempo-digitacao").text();
+    campo.one("focus", function() {
+        // Adicione aqui
+        $("#botao-reiniciar").attr("disabled",true);
+        ...
+}
+```
+
+Assim quando o usuário começar a digitar o botão será desabilitado. Para reabilitá-lo ao fim do jogo vamos remover o atributo disabled na função inicializaCronometro, dentro do if que determina o fim do jogo:
+```javascript
+function inicializaCronometro() {
+    ...
+            if (tempoRestante < 1) {
+                campo.attr("disabled", true);
+                clearInterval(cronometroID);
+                //Adicione aqui
+                $("#botao-reiniciar").attr("disabled", false);
+            }
+    ...
+}
+```
+
+Pronto, este é um modo de não deixar nossos usuários reiniciar o jogo no meio de uma digitação.
+
+
 
 [Voltar ao Índice](#indice)
 
