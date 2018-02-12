@@ -1598,6 +1598,7 @@ Pronto, este é um modo de não deixar nossos usuários reiniciar o jogo no meio
 ## <a name="parte5">5.Funções que auxiliam os estilos</a>
 
 
+
 [Voltar ao Índice](#indice)
 
 ---
