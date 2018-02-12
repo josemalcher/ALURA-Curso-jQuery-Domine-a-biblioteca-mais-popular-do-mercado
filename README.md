@@ -657,6 +657,261 @@ campo.on("input", function() {
 
 ## <a name="parte3">3.Criando o GameOver com eventos</a>
 
+### Game Over com eventos
+
+Nosso jogo está começando a criar forma, mas está faltando algo característico de todo jogo, o Game Over. Nós temos um tempo limite para o usuário digitar a frase, então ele deve decrescer, e quando o mesmo zerar, o usuário perde o jogo, não conseguindo mais digitar no campo. Vamos começar?
+
+#### Contagem regressiva para digitação
+
+Assim que o usuário clicar no campo de digitação, a contagem regressiva deve iniciar, então primeiramente devemos detectar essa ação do usuário "entrar no campo". Será que podemos usar o evento click? Clicando no campo, nós entramos nele, ok. Mas será que essa é a única maneira? Não, podemos entrar no campo utilizando a tecla TAB também.
+
+Pensando nisso, há um evento específico para quando entramos dentro de um campo, que é o evento focus, que é quando o campo ganha o foco para ser utilizado. Logo, no main.js, podemos começar a implementar o nosso código:
+```javascript
+campo.on("focus", function() {
+});
+```
+
+Se queremos que o tempo decresça, temos que saber o seu valor. Para isso, na página principal.html, vamos envolver o tempo em uma tag <span>, e colocar o id tempo-digitacao:
+```html
+<ul class="informacoes">
+    <li><span id="tamanho-frase">5</span> palavras</li>
+    <li><span id="tempo-digitacao">10</span> segundos</li>
+</ul>
+```
+
+Voltando ao main.js, vamos pegar o conteúdo do span e salvá-lo em uma variável:
+
+```javascript
+var tempoRestante = $("#tempo-digitacao").text();
+campo.on("focus", function() {
+});
+```
+
+Feito isso, temos que implementar a lógica. A cada segundo que se passar, temos que subtrair 1 do nosso tempo restante. Para tal, vamos utilizar a função setInterval do JavaScript, que faz com que uma determinada ação (passada como primeiro parâmetro) seja executada em um intervalo de tempo (passado como segundo parâmetro, no nosso caso, 1 segundo, ou 1000 milissegundos):
+
+```javascript
+var tempoRestante = $("#tempo-digitacao").text();
+campo.on("focus", function() {
+    setInterval(function() {
+
+    }, 1000);
+});
+```
+
+Dentro o setInterval podemos subtrair 1 do nosso tempo restante a cada segundo que passe, logo:
+
+```javascript
+var tempoRestante = $("#tempo-digitacao").text();
+campo.on("focus", function() {
+    setInterval(function() {
+        tempoRestante--;
+    }, 1000);
+});
+```
+
+Falta agora atualizarmos o contador com o tempo restante, bem semelhante ao que já fizemos anteriormente:
+
+```javascript
+var tempoRestante = $("#tempo-digitacao").text();
+campo.on("focus", function() {
+    setInterval(function() {
+        tempoRestante--;
+        $("#tempo-digitacao").text(tempoRestante);
+    }, 1000);
+});
+```
+
+Perfeito, nosso tempo já está decrescendo, só que o mesmo ainda não influencia em nada no jogo, já que o usuário consegue ficar digitando mesmo com o tempo zerado. Vamos então desabilitar o campo para que o usuário não consiga mais digitar nada quando o tempo zerar.
+
+A textarea possui um atributo disabled, que faz com que não consigamos digitar nada na mesma (justamente o que queremos). Então o que queremos é que quando o tempo chegar a 0, o JavaScript vai e "coloca" o atributo disabled na textarea. Como queremos adicionar um atributo, o jQuery nos auxilia disponibilizando a função attr.
+
+Essa função funciona de maneira semelhante à função text, podendo pegar o valor de um atributo, ou modificá-lo. Por exemplo, para pegar o valor do atributo rows do nosso campo, fazemos:
+
+```javascript
+var campo = $(".campo-digitacao");
+campo.attr("rows");
+```
+
+E para modificar o mesmo, passamos mais um parâmetro para a função, que é o novo valor do atributo, por exemplo:
+
+```javascript
+var campo = $(".campo-digitacao");
+campo.attr("rows", 500);
+```
+
+Só que o atributo disabled não tem nenhum valor, só queremos colocá-lo na tag. Nesse caso, nós temos que informar isso passando o valor true (verdadeiro) para a função, assim estaremos "habilitando" o atributo:
+
+```javascript
+var tempoRestante = $("#tempo-digitacao").text();
+campo.on("focus", function() {
+    setInterval(function() {
+        tempoRestante--;
+        $("#tempo-digitacao").text(tempoRestante);
+        campo.attr("disabled", true);
+    }, 1000);
+});
+```
+
+Como queremos desabilitar o campo somente quando o tempo chegar a 0, vamos envolver essa linha em uma condição if:
+
+```javascript
+var tempoRestante = $("#tempo-digitacao").text();
+campo.on("focus", function() {
+    setInterval(function() {
+        tempoRestante--;
+        $("#tempo-digitacao").text(tempoRestante);
+        if (tempoRestante < 1) {
+            campo.attr("disabled", true);
+        }
+    }, 1000);
+});
+```
+
+Testamos e vemos que assim que o tempo chega a 0, o campo é travado, perfeito! Mas ainda temos um bug, porque o tempo continua decrescendo depois do 0, ou seja, ele fica negativo. Temos que fazer com que a função setInterval pare quando o tempo for 0, mas como?
+Para isso, existe a função clearInterval, que recebe o id do setInterval como parâmetro. Vamos colocá-la dentro do nosso if:
+
+```javascript
+var tempoRestante = $("#tempo-digitacao").text();
+campo.on("focus", function() {
+    setInterval(function() {
+        tempoRestante--;
+        $("#tempo-digitacao").text(tempoRestante);
+        if (tempoRestante < 1) {
+            campo.attr("disabled", true);
+            clearInterval(id);
+        }
+    }, 1000);
+});
+```
+
+Mas atualmente não temos acesso a essa id da função setInterval, como consegui-lo? Toda função setInterval retorna o seu próprio id, logo basta guardarmos esse id em uma variável e passá-lo para a função clearInterval:
+
+```javascript
+var tempoRestante = $("#tempo-digitacao").text();
+campo.on("focus", function() {
+    var cronometroID = setInterval(function() {
+        tempoRestante--;
+        $("#tempo-digitacao").text(tempoRestante);
+        if (tempoRestante < 1) {
+            campo.attr("disabled", true);
+            clearInterval(cronometroID);
+        }
+    }, 1000);
+});
+```
+
+Podemos testar mais uma vez, e ver que agora tudo funciona como o esperado. Será?
+#### Escutando um evento uma única vez
+
+O que acontece se entrarmos vários vezes no nosso campo? Repare que toda vez que entramos no campo, o tempo decresce mais rápido, chegando até a ficar negativo! Isso acontece porque toda vez que o campo é focado, a nossa lógica é executada. O ideal seria que esse código só seja executado uma única vez.
+
+O problema é que a função on fica escutando o evento o tempo todo, e para que ela funcione somente na primeira vez, existe a função one, que funciona exatamente como a função on, só que só escuta o evento uma única vez:
+
+```javascript
+var tempoRestante = $("#tempo-digitacao").text();
+campo.one("focus", function() {
+    var cronometroID = setInterval(function() {
+        tempoRestante--;
+        $("#tempo-digitacao").text(tempoRestante);
+        if (tempoRestante < 1) {
+            campo.attr("disabled", true);
+            clearInterval(cronometroID);
+        }
+    }, 1000);
+});
+```
+
+### Mãos na massa: Game over
+
+Implementando a lógica de Game Over
+Assim que o usuário clicar no campo de digitação, deve começar a contagem regressiva do jogo. Como apresentado no video, vamos implementar essa funcionalidade:
+
+1) Abra o arquivo principal.html e envolva o tempo em uma tag <span>, colocando o id tempo-digitacao. Adicione o elemento span apenas dentro da segunda li:
+```html
+<ul class="informacoes">
+    <li><span id="tamanho-frase">5</span> palavras</li>
+    <li><span id="tempo-digitacao">10</span> segundos</li>
+</ul>
+```
+
+Repare que usamos a ul com a classe informacoes.
+2) Abra o arquivo main.js e acrescente no final o código para selecionar o elemento span:
+var tempoRestante = $("#tempo-digitacao").text();
+3) Ainda no main.js adicione logo depois da variável tempoRestante o evento blur que fica associando com o nosso campo:
+
+```javascript
+var tempoRestante = $("#tempo-digitacao").text();
+campo.one("focus", function() {
+    //aqui vem mais
+});
+```
+
+Repare que já usamos a função one que garante que o evento será associado apenas uma vez.
+4) Dentro da função anônima usa o setInterval para diminiur o tempoRestante a cada segundo:
+```javascript
+var tempoRestante = $("#tempo-digitacao").text();
+campo.one("focus", function() {
+    var cronometroID = setInterval(function() {
+        tempoRestante--;
+        //aqui vem mais
+    }, 1000);
+});
+```
+
+Perceba que a função setInterval devolve uma id (cronometroID).
+5) Agora só falta atualizar o tempo-digitacao no DOM e verificar se o tempo já esgotou. Lembra-se de desabilitar o campo através da função attr e de limpar o intervalo (clearInterval): 
+```javascript
+var tempoRestante = $("#tempo-digitacao").text();
+campo.one("focus", function() {
+    var cronometroID = setInterval(function() {
+        tempoRestante--;
+        $("#tempo-digitacao").text(tempoRestante);
+        if (tempoRestante < 1) {
+            campo.attr("disabled", true);
+            clearInterval(cronometroID);
+        }
+    }, 1000);
+});
+```
+
+6) Pronto, salve tudo e teste no seu navegador!
+
+
+### Mãos na massa: Game over
+ 
+Implementando cada mais funcionalidades o nosso código também cresceu. No próximo capítulo vamos organizar o nosso código melhor!
+```javascript
+var frase = $(".frase").text();
+var numPalavras  = frase.split(" ").length;
+var tamanhoFrase = $("#tamanho-frase");
+
+tamanhoFrase.text(numPalavras);
+
+
+var campo = $(".campo-digitacao");
+campo.on("input", function() {
+    var conteudo = campo.val();
+    var qtdPalavras = conteudo.split(/\S+/).length - 1;
+    console.log(qtdPalavras);
+    $("#contador-palavras").text(qtdPalavras);
+
+    var qtdCaracteres = conteudo.length;
+    $("#contador-caracteres").text(qtdCaracteres);
+
+});
+
+var tempoRestante = $("#tempo-digitacao").text();
+campo.one("focus", function() {
+    var cronometroID = setInterval(function() {
+        tempoRestante--;
+        $("#tempo-digitacao").text(tempoRestante);
+        if (tempoRestante < 1) {
+            campo.attr("disabled", true);
+            clearInterval(cronometroID);
+        }
+    }, 1000);
+});
+```
 
 [Voltar ao Índice](#indice)
 
