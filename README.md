@@ -1597,6 +1597,661 @@ Pronto, este é um modo de não deixar nossos usuários reiniciar o jogo no meio
 
 ## <a name="parte5">5.Funções que auxiliam os estilos</a>
 
+### Estilizando o jogo
+
+O visual do nosso jogo ainda está bastante simples. Se formos olhar a versão completa do jogo:
+ 
+Iremos perceber alguns detalhes, como botões estilizados, campo de digitação com o fundo cinza quando o mesmo estiver desabilitado, entre outros. Mas não estamos mexendo com CSS ainda, então é justamente isso que faremos aqui neste capítulo, utilizar o CSS para estilizar o nosso jogo.
+
+Utilizaremos uma framework já pronta, pois o foco deste treinamento não é CSS, mas estilizaremos alguns pontos do nosso jogo com o auxílio do JavaScript, e obviamente do jQuery.
+
+Adicionando alguns estilos ao nosso jogo
+
+Dentro da pasta do projeto, public/css/libs, temos o arquivo materialize.min.css. O Materialize é uma framework front-end, assim como o Bootstrap, e nos auxiliará a estilizar o nosso jogo, evitando assim uma grande perda de tempo nessa tarefa.
+
+Então vamos importá-lo na página principal.html, dentro da tag <head>:
+
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Alura Typer</title>
+    <link rel="stylesheet" href="css/libs/materialize.min.css">
+</head>
+
+```
+
+Abra a página no navegador, e perceba já uma mudança significativa no layout da mesma:
+ 
+Para estilizar ainda mais nossa página, vamos colocar todo o seu conteúdo do body (exceto os scripts) dentro de uma div com a classe container:
+```html
+<body>
+    <div class="container">
+        <!-- conteúdo da página aqui -->
+    </div>
+
+    <script src="js/jquery.js"></script>
+    <script src="js/main.js"></script>
+</body>
+```
+
+Com isso a nossa página fica alinhada no centro. Vamos centralizar também os contadores, o título e a frase, para isso adicionamos a classe center neles, mais precisamente nas duas uls da nossa página, no h1 e no p.
+
+Após isso, vamos aumentar a altura do campo, alinhar a frase à esquerda, e aumentar as suas fontes. Coloque esse código dentro do arquivo public/css/estilos.css:
+```css
+.campo-digitacao {
+    font-size: 20px;
+    height: 130px;
+}
+
+.frase {
+    font-size: 20px;
+    text-align: left;
+}
+```
+
+Por fim, não podemos esquecer de importar esse arquivo na página principal.html:
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Alura Typer</title>
+    <link rel="stylesheet" href="css/libs/materialize.min.css">
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+ 
+ ```
+
+#### CSS com jQuery
+
+Um outro ponto que podemos melhorar é o campo de digitação ficar com o fundo cinza quando o mesmo estiver desabilitado, quando o tempo se esgotar, para ficar bem claro para o usuário que ele não pode digitar no campo. E aí é que o jQuery nos auxilia, ele pode alterar o estilo de qualquer elemento.
+
+No main.js, quando o tempo for menos que 1 (dentro da função inicializaCronometro), alteramos o CSS do campo utilizando a função css do jQuery, passando por parâmetro a propriedade CSS queremos modificar e o seu valor, separados por vírgula:
+```javascript
+if (tempoRestante < 1) {
+    campo.attr("disabled", true);
+    clearInterval(cronometroID);
+    campo.css("background-color", "lightgray"); //novo
+}
+```
+
+Agora ficou bem mais claro que o usuário não pode digitar, já que o jogo foi finalizado.
+
+#### Alterando o CSS no JavaScript?
+
+Mas se o designer do jogo decidir que não quer mais que a cor do fundo fique cinza, e sim azul, teremos que procurar no main.js onde estamos modificando o background-color do elemento e alterá-lo.
+
+Nós sabemos que não é certo mexer com o estilo de uma página, de seus elementos, no JavaScript. Se queremos estilizar, logo devemos mexer nos arquivos .css. Então, o que podemos fazer é, ao invés de mexer diretamente com o CSS no JavaScript, adicionar uma classe. E no arquivo CSS nós estilizamos o campo através dessa classe.
+
+Logo, no arquivo estilos.css, adicionamos:
+```css
+.campo-desativado {
+    background-color: lightgray;
+}
+```
+
+E no main.js, quando o tempo se esgotar, adicionamos essa classe campo-desativado no campo, através da função addClass:
+
+```javascript
+if (tempoRestante < 1) {
+    campo.attr("disabled", true);
+    clearInterval(cronometroID);
+    campo.addClass("campo-desativado");
+}
+```
+
+
+#### Adicionando ícones
+
+O que está faltando agora no nosso jogo para realmente ficar parecido com o Alura Typer pronto são os ícones e botões coloridos que estão nele. Você pode ver como utilizar esses ícones aqui, no site no Materialize.
+O primeiro passo é importar a fonte de ícones, nós podemos copiar o link que está no site, ou utilizar a fonte que já está no projeto, dentro da pasta public/css/libs. Vamos então importá-la dentro da tag <head>, na página principal.html:
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Alura Typer</title>
+    <link rel="stylesheet" href="css/libs/materialize.min.css">
+    <link rel="stylesheet" href="css/libs/google-fonts.css">
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+```
+
+Agora, para utilizar os ícones, temos que adicionar uma tag <i> com as classes small (referente ao tamanho do ícone, há também os tamanhos tiny, small, medium e large) e material-icons. Dentro da tag nós colocamos o nome do ícone que queremos (a lista se encontra no site). Os ícones que utilizaremos para o contador do tamanho da frase e para o cronômetro são o description e query_builder, respectivamente.
+Além disso, vamos deixar o nosso ul centraliado. Logo, nossa ul de informações ficará assim:
+
+```html
+<ul class="informacoes center">
+    <li>
+        <i class="small material-icons">description</i>
+        <span id="tamanho-frase">5</span> palavras
+    </li>
+    <li>
+        <i class="small material-icons">query_builder</i>
+        <span id="tempo-digitacao">10</span> segundos
+    </li>
+</ul>
+```
+
+Falta deixar os ícones alinhados com o seu respectivo texto, para isso vamos adicionar a classe icones às duas tags <i> e adicionar o seguinte código no estilos.css:
+```css
+.icones {
+    vertical-align: middle;
+}
+```
+
+Para sua comparação segue o ul completo:
+```html
+<ul class="informacoes center">
+    <li>
+        <i class="small material-icons icones">description</i>
+        <span id="tamanho-frase">5</span> palavras
+    </li>
+    <li>
+        <i class="small material-icons icones">query_builder</i>
+        <span id="tempo-digitacao">10</span> segundos
+    </li>
+</ul>
+```
+
+#### Botão de reinício de jogo mais agradável
+
+O próximo passo agora é modificar o layout do botão de reinício de jogo. Para isso, o Materialize também nos auxilia, na página Buttons há uma série do opções para utilizarmos. Vamos utilizar o Floating, então vamos substituir o código do botão atual pelo código disponibilizado no site:
+```html
+<a class="btn-floating btn-large waves-effect waves-light red">
+    <i class="material-icons">add</i>
+</a>
+```
+Para terminar, vamos colocar o id do nosso antigo botão (botao-reiniciar) na tag <a> e utilizar um ícone mais expressivo, o restore:
+```html
+<a id="botao-reiniciar" class="btn-floating btn-large waves-effect waves-light red">
+    <i class="material-icons">restore</i>
+</a>
+```
+
+Como iremos ter mais botões futuramente, vamos colocar o nosso botão atual dentro de uma div com a classe botoes:
+```html
+<div class="botoes">
+    <a id="botao-reiniciar" class="btn-floating btn-large waves-effect waves-light red">
+        <i class="material-icons">restore</i>
+    </a>
+</div>
+```
+
+
+#### Adicionando e removendo classes facilmente de um elemento
+
+Quando clicamos no botão, conseguimos digitar novamente no campo, mas o fundo do mesmo não fica branco, podendo deixar o usuário em dúvida se o jogo realmente foi reiniciado. Vamos deixar isso bem claro, deixando o fundo do campo em branco assim que o jogo for reiniciado.
+
+Para deixar o fundo do campo cinza, nós adicionamos a classe campo-desativado no campo, assim que o tempo se esgotar. E no CSS nós pintamos o fundo do campo que contiver esta classe. Então para remover o fundo, basta nós removermos a classe do campo quando o jogo for reiniciado.
+
+Assim como o jQuery possui a função addClass, ele também possui a removeClass, logo, no main.js, adicionamos:
+
+```javascript
+function reiniciaJogo() {
+    campo.attr("disabled", false);
+    campo.val("");
+    $("#contador-palavras").text(0);
+    $("#contador-caracteres").text(0);
+    $("#tempo-digitacao").text(tempoInicial);
+    inicializaCronometro();
+    campo.removeClass("campo-desativado");
+}
+```
+
+Essa ação de adicionar e remover classes se tornou uma tarefa tão comum, que o jQuery criou uma função específica para isso, a toggleClass. Ela funciona da seguinte maneira, se no momento que a função for chamada, o elemento possuir a classe, ela será removida. Mas se o elemento não possuir a classe, ela será adicionada. Exatamente o que precisamos!
+
+Então vamos utilizar esta função no lugar de ambas as funções, addClass e removeClass:
+```javascript
+function reiniciaJogo() {
+    campo.attr("disabled", false);
+    campo.val("");
+    $("#contador-palavras").text(0);
+    $("#contador-caracteres").text(0);
+    $("#tempo-digitacao").text(tempoInicial);
+    inicializaCronometro();
+    campo.toggleClass("campo-desativado");
+}
+```
+
+E dentro da função inicializaCronometro():
+```javascript
+if (tempoRestante < 1) {
+    campo.attr("disabled", true);
+    clearInterval(cronometroID);
+    campo.toggleClass("campo-desativado");
+}
+```
+
+#### Marcação da borda
+
+O nosso aplicativo Alura Typer já está ganhando forma mas ainda há pontos a melhorar. Algo que ainda falta é uma verificação visual se o usuário realmente acerta o texto a digitar. Queremos que o jogador perceba facilmente onde errou no texto.
+
+A nossa ideia é a seguinte: enquanto o jogador acerta as letras mostraremos uma borda verde no campo de digitação. Assim que errou uma letra alteraremos a borda para a cor vermelha. Assim o jogador percebe na hora que errou algo, ok?
+
+#### Evento input
+Para comparar o texto digitado com a frase proposta devemos associar o evento input que ao nosso elemento campo. Já aprendemos isso nas aulas anteriores, basta usar a função on do jquery.
+
+Dentro do main.js, ainda solto e fora de qualquer outra função vamos pegar a frase pelo seletor de classe do elemento e adicionar o evento ao campo:
+```javascript
+var frase = $(".frase").text();
+campo.on("input", function() {
+    console.log(frase);
+});
+```
+
+Ao testar no navegador já deveria aparecer a frase completa enquanto estamos escrevendo.
+
+Dentro da função anônima vamos capturar o texto digitado, basta usar a função val() do campo:
+```javascript
+var frase = $(".frase").text();
+campo.on("input", function() {
+    var digitado = campo.val();
+    console.log(frase);
+    console.log(digitado);
+});
+```
+
+#### Comparando o texto digitado
+
+Agora já sabemos qual é a frase e o que o jogador digitou. Falta verificar se o texto digitado realmente faz parte da frase para saber se o jogador errou ou não.
+Repare que não podemos usar a condição digitado == frase pois isso verificaria sempre a frase inteira com o valor digitado. Mesmo se o jogador tenha escrito apenas uma palavra, o jogo consideraria errado pois estaria comparando com a frase inteira, mesmo que o jogador esteja no caminho certo e não tenha errado nada ainda. 
+Então para saber se o jogador está certo ou não, vamos pegar apenas a parte inicial da frase que possui a mesma quantidade do valor digitado. Isso pode ser feito pela função substr (sub-string):
+
+```javascript
+var comparavel = frase.substr(0 , digitado.length);
+```
+
+A função substr devolve uma outra string com o tamanho definido nos parâmetros. O primeiro parâmetro é o inicio, aqui 0, ou seja, sempre a partir do primeiro char. O segundo define o fim que é justamente o tamanho do valor digitado. 
+
+Assim podemos realmente comparar o valor digitado com a substring correta da frase:
+```javascript
+if(digitado == comparavel) {
+    console.log("Está certo");
+} else {
+    console.log("Está errado");
+}
+```
+
+Agora tudo dentro do evento:
+```javascript
+var frase = $(".frase").text();
+campo.on("input", function() {
+    var digitado = campo.val();
+    var comparavel = frase.substr(0 , digitado.length);
+
+    if(digitado == comparavel) {
+        console.log("Está certo");
+    } else {
+        console.log("Está errado");
+    }
+});
+```
+
+
+#### Melhorando o feedback
+
+Ótimo, já está funcionando mas apenas olhando no console percebemos se erramos ou acertamos. Vamos melhorar agora o feedback para o usuário mostrando uma borda verde ou vermelha, respectivamente.
+
+O primeiro passo é adicionar duas classes que representam a borda verde ou vermelha no nosso arquivo estilo.css:
+```css
+.borda-verde {
+    border: 3px solid green;
+}
+
+.borda-vermelha {
+    border: 3px solid red;
+}
+```
+
+Agora só falta adicionar a classe programaticamente no evento dentro do nosso if:
+```javascript
+var frase = $(".frase").text();
+campo.on("input", function() {
+    var digitado = campo.val();
+    var comparavel = frase.substr(0 , digitado.length);
+
+    if(digitado == comparavel) {
+        campo.addClass("borda-verde");
+    } else {
+        campo.addClass("borda-vermelha");
+    }
+});
+```
+
+#### Removendo a classe
+
+Ao testar já aparece a borda verde como esperado e se errarmos se torna vermelha, mas ainda tem um probleminha. Se corrigimos o texto digitado, a borda não volta para a cor verde, e sim continua vermelha. Isto é pois sempre adicionarmos a classe no campo. Uma vez adicionado ela continua lá e consequentemente continua vermelho ou verde, dependendo da última classe adicionada.
+
+Para resolver basta remover a outra classe dentro do if:
+```javascript
+var frase = $(".frase").text();
+campo.on("input", function() {
+    var digitado = campo.val();
+    var comparavel = frase.substr(0 , digitado.length);
+
+    if(digitado == comparavel) {
+        campo.addClass("borda-verde");
+        campo.removeClass("borda-vermelha");
+    } else {
+        campo.addClass("borda-vermelha");
+        campo.removeClass("borda-verde");
+    }
+});
+```
+
+Novamente vamos testar no navegador e a troca de cores funciona perfeitamente.
+
+#### Encapsulando o código
+
+Vamos seguir as boas práticas e isolar o código JavaScript dentro de uma função para não ficar solto dentro do arquivo main.js. Chamaremos a função de inicializaMarcadores
+```javascript
+function inicializaMarcadores() {
+    var frase = $(".frase").text();
+    campo.on("input", function() {
+        var digitado = campo.val();
+        var comparavel = frase.substr(0 , digitado.length);
+
+        if(digitado == comparavel) {
+            campo.addClass("borda-verde");
+            campo.removeClass("borda-vermelha");
+        } else {
+            campo.addClass("borda-vermelha");
+            campo.removeClass("borda-verde");
+        }
+    });
+}
+```
+
+E assim podemos adicionar essa função inicializaMarcadores na função que é chamada ao carregar a página:
+```javascript
+$(function(){
+    atualizaTamanhoFrase();
+    inicializaContadores();
+    inicializaCronometro();
+    inicializaMarcadores(); //novo
+    $("#botao-reiniciar").click(reiniciaJogo);
+});
+```
+
+#### Inicializando sem cor
+
+A marcação da borda já funciona mas ainda podemos melhorar um detalhe. Ao jogar e reinicializar o jogo através de nosso botão, percebemos que a borda continua pintada e não volta ao estado inicial. Faz todo sentido começar com uma borda preta, e a cor vir apenas quando realmente começamos a digitar. 
+Para reiniciar o jogo corretamente basta remover as classe de borda do campo na função reiniciaJogo:
+```javascript
+function reiniciaJogo(){
+    campo.attr("disabled",false);
+    campo.val("");
+    $("#contador-palavras").text("0");
+    $("#contador-caracteres").text("0");
+    $("#tempo-digitacao").text(tempoInicial);
+    inicializaCronometro();
+    campo.toggleClass("campo-desativado");
+
+    campo.removeClass("borda-vermelha"); //novo
+    campo.removeClass("borda-verde"); //novo
+}
+```
+
+### O que é CSS?
+
+HTML é usado para estruturar conteúdos da página, o CSS para formatar conteúdos estruturados.
+CSS é uma linguagem para estilos que define o layout de documentos HTML. Por exemplo, CSS controla fontes, cores, margens, linhas, alturas, larguras, imagens de fundo, posicionamentos e muito mais. 
+
+
+### Mãos na massa: Aplicando CSS
+
+#### Melhorando o visual
+O visual do nosso jogo ainda está bastante simples razão suficiente para aplicar um CSS, não? Como você viu no video usaremos o framework Materialize para estilizar a página que auxilia muito nessa tarefa. 
+Para tal:
+
+1) Abra o arquivo principal.html e adicione dentro do <head> logo abaixo da tag <title>:
+
+```html
+<link rel="stylesheet" href="css/libs/materialize.min.css">
+```
+Recarregue a página dentro do navegador e repare a diferença. Para sua comparação o <head> inteiro ficou como:
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Alura Typer</title>
+    <link rel="stylesheet" href="css/libs/materialize.min.css"> <!-- novo -->
+</head>
+```
+
+Obs: O arquivo materialize.min.css já está dentro da pasta public/css/libs do seu projeto.
+
+2) Agora, na mesma página principal.html, coloque todo o conteúdo do body (exceto os scripts) dentro de uma div com a classe container. Adicione apenas o div:
+```html
+<body>
+    <div class="container">
+        <!-- conteúdo da página aqui -->
+    </div>
+
+    <script src="js/jquery.js"></script>
+    <script src="js/main.js"></script>
+</body>
+```
+
+Novamente, recarregue a página no navegador para ver a diferença
+
+3) Após isso, vamos aumentar a altura do campo, alinhar a frase à esquerda, e aumentar as suas fontes. Abre o arquivo public/css/estilos.css e coloque esse código abaixo:
+```css
+.campo-digitacao {
+    font-size: 20px;
+    height: 130px;
+}
+
+.frase {
+    font-size: 20px;
+    text-align: left;
+}
+```
+4) No arquivo principal.html importe o estilo.css dentro da tag <head>:
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Alura Typer</title>
+    <link rel="stylesheet" href="css/libs/materialize.min.css"> 
+    <link rel="stylesheet" href="css/estilos.css"> <!-- novo -->
+</head>
+```
+
+5) Para deixar mais claro que o jogo terminou, deixe o campo de digitação cinza quando o tempo esgotar. Dentro do arquivo public/css/estilo.css adiciona uma nova clase:
+```css
+.campo-desativado {
+    background-color: lightgray;
+}
+```
+
+6) No arquivo main.js, quando o tempo se esgotar, devemos adicionar essa classe campo-desativado ao campo usando jQuery. Quando o usuário clicar no botão reiniciar, o campo deveria ser reativado. Para não espalhar as funções addClass e removeClass do jQuery, vamos aproveitar a função toggleClass que ativa e desativa respectivamente.
+Abra o arquivo main.js e procure a função inicializaCronometro:
+```javascript
+//dentro do arquivo main.js, dentro da função inicializaCronometro
+
+//dentro desse if adicione apenas a linha com toggleClass
+if (tempoRestante < 1) {
+    campo.attr("disabled", true);
+    clearInterval(cronometroID);
+    campo.toggleClass("campo-desativado"); //novo
+}
+//Adicione a mesma funcionalidade no final da função reiniciaJogo:
+function reiniciaJogo() {
+    //código omitido e não alterado
+    campo.toggleClass("campo-desativado"); //novo
+}
+```
+7) Salve os arquivo e teste no navegador. Após o tempo esgotar, o campo de digitação deve ficar cinza. Ao reiniciar volta a ser ativado.
+ 
+
+#### Mãos na massa: Usando ícones
+O próximo passo é usar os ícones e colorir mais a página. Vamos aproveitar o framework materialize para essa tarefa.
+1) O primeiro passo é importar a fonte de ícones. Abra a página principal.html e adicione na tag <head> mais um estilo:
+```html
+<head>
+    <meta charset="UTF-8">
+    <title>Alura Typer</title>
+    <link rel="stylesheet" href="css/libs/materialize.min.css">
+    <link rel="stylesheet" href="css/libs/google-fonts.css"> <!-- novo --> 
+    <link rel="stylesheet" href="css/estilos.css"> 
+</head>
+```
+
+2) Agora podemos aproveitar os ícones do framework Materialize. Vamos mostrar um ícone para o item palavras e tempo. No mesmo arquivo principal.html procure a tag ul que possui a classe informacoes. Nele adicione a classe center, e em cada elemento li uma nova tag para carregar o ícone:
+```html
+<ul class="informacoes center">
+    <li>
+        <i class="small material-icons icones">description</i>
+        <span id="tamanho-frase">5</span> palavras
+    </li>
+    <li>
+        <i class="small material-icons icones">query_builder</i>
+        <span id="tempo-digitacao">10</span> segundos
+    </li>
+</ul>
+```
+Obs: Você pode ver como utilizar esses ícones no site do Materialize.
+3) Repare que usamos a classe icones dentro da tag i. Essa classe não existe e deve ser adicionado no nosso arquivo estilos.css para centralizar o texto com os ícones.
+Adicione no arquivo estilos.css a classe seguinte:
+```css
+.icones {
+    vertical-align: middle;
+}
+```
+4) Recarregue a página no navegador. O resultado deve ser parecido com a imagem abaixo:
+ 
+
+#### Mãos na massa: Verificando a digitação
+
+Como apresentado no video vamos marcar a borda do campo de digitação para sinalizar se o usuário errou ou acertou.
+1) No arquivo main.js adicione uma nova função inicializaMarcadores. Nela já recupera a frase através do jQuery e associe o evento input com o campo:
+```javascript
+function inicializaMarcadores() {
+
+    var frase = $(".frase").text();
+    campo.on("input", function() {
+        //aqui vem mais
+    });
+}
+```
+2) Dentro da função anônima do evento pegue o valor do campo e gere uma substring baseado no tamanho dele. Guarde o substring dentro de uma nova variável:
+```javascript
+var digitado = campo.val();
+var comparavel = frase.substr(0 , digitado.length);
+```
+3) Logo após da variável comparavel teste se ela é igual ao texto digitado. Se for igual, adicione a classe borda-verde e remove borda-vermelha. No bloco else faça o inverso:
+```javascript
+if(digitado == comparavel) {
+    campo.addClass("borda-verde");
+    campo.removeClass("borda-vermelha");
+} else {
+    campo.addClass("borda-vermelha");
+    campo.removeClass("borda-verde");
+}
+```
+4) Procure a função que é chamada ao carregar a página no início do arquivo main.js. Nela adiciona a chamada da função inicializaMarcadores: 
+```javascript
+$(function(){
+    atualizaTamanhoFrase();
+    inicializaContadores();
+    inicializaCronometro();
+
+    inicializaMarcadores(); //novo
+
+    $("#botao-reiniciar").click(reiniciaJogo);
+});
+```
+5) As classes borda-verde e borda-vermelha não exisem ainda. Abra o arquivo estilos.css e adicione:
+```css
+.borda-verde {
+    border: 3px solid green;
+}
+
+.borda-vermelha {
+    border: 3px solid red;
+}
+```
+6) Vamos inicializar o jogo sempre sem marcação da borda. Para isso volte ao arquivo main.js e procure a função reiniciaJogo. No final dela adicione:
+```javascript
+function reiniciaJogo(){
+    campo.attr("disabled",false);
+    campo.val("");
+    $("#contador-palavras").text("0");
+    $("#contador-caracteres").text("0");
+    $("#tempo-digitacao").text(tempoInicial);
+    inicializaCronometro();
+    campo.toggleClass("campo-desativado");
+
+    campo.removeClass("borda-vermelha"); //novo
+    campo.removeClass("borda-verde"); //novo
+}
+```
+7) Salve os seus arquivos e teste a marcação da borda!
+
+
+
+#### Mãos na massa: Verificando a digitação
+ 
+Para sua comparação segue uma vez o código completo da função inicializaMarcadores:
+```javascript
+function inicializaMarcadores() {
+    var frase = $(".frase").text();
+    campo.on("input", function() {
+        var digitado = campo.val();
+        var comparavel = frase.substr(0 , digitado.length);
+
+        if(digitado == comparavel) {
+            campo.addClass("borda-verde");
+            campo.removeClass("borda-vermelha");
+        } else {
+            campo.addClass("borda-vermelha");
+            campo.removeClass("borda-verde");
+        }
+    });
+}
+```
+
+No nosso projeto foi necessário pegar uma parte da frase para comparar a string com aquilo que foi digitado pelo usuário. Lembrando rapidamente do código:
+```javascript
+var comparavel = frase.substr(0 , digitado.length);
+```
+Usamos a função substr para pegar o uma parte da frase, aqui do início (índice 0) até o tamanho da string digitado. Baseado nessa substring comparavel testamos se o conteúdo digitado bate com a frase:
+```javascript
+if(digitado == comparavel) {
+ campo.addClass("borda-verde");
+} else {
+ campo.addClass("borda-vermelha");
+}
+```
+
+Como o JavaScript está evoluindo e melhorando já existe uma forma mais fácil de verificar se uma string faz parte da outra string. Se o seu navegador já dar suporte ao ECMA Script 6 você pode simplesmente executar:
+```javascript
+ var digitouCorreto = frase.startsWith(digitado);
+if(digitouCorreto) {
+ campo.addClass("borda-verde");
+} else {
+ campo.addClass("borda-vermelha");
+}
+```
+Ainda mais enxuto:
+```javascript
+if( frase.startsWith(digitado)) {
+ campo.addClass("borda-verde");
+} else {
+ campo.addClass("borda-vermelha");
+}
+```` 
+A função startsWith devolve true ou false, se a frase começa com o valor digitado ou não. Teste isso agora no console, digitando por exemplo:
+```javascript
+"ECMA Script 6".startsWith("ECMA")
+```
+#### Para saber mais: Materialize e Bootstrap
+O Materialize é uma framework front-end que auxilia muito a estilizar páginas, evitando assim uma grande perda de tempo nessa tarefa. É útil para quem gostaria de seguir boas práticas no mundo CSS para por exemplo criar uma página responsiva sem entrar em detalhes:
+
+http://materializecss.com/
+
+O Materialize foi criado pela Google e segue o Material Design que é uma linguagem de design desenvolvida pela Google. Material Design é útilizado em vários produtos do Google e também é aplicado nos aplicativos Android.
+
+Outro framework famoso nessa linha é o Bootstrap. Para ser correto o Bootstrap é o framework mais famoso para estilizar páginas:
+http://getbootstrap.com/
+
+
 
 
 [Voltar ao Índice](#indice)
