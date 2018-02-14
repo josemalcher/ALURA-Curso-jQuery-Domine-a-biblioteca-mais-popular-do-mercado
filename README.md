@@ -104,7 +104,7 @@ Por enquanto vamos ignorar a pasta servidor e vamos no focar apenas na pasta pub
 
 #### Iniciando o projeto: HTML base
 
-Nosso primeiro passo é escrever um HTML inicial para nossa aplicação, então vamos começar editando o arquivo principal.html, para que ele contenha o título da nossa aplicação, uma frase , e uma <ul> que conterá o número de caracteres e de palavras da frase:
+Nosso primeiro passo é escrever um HTML inicial para nossa aplicação, então vamos começar editando o arquivo principal.html, para que ele contenha o título da nossa aplicação, uma frase , e uma "ul" que conterá o número de caracteres e de palavras da frase:
 
 ```html
 <body>
@@ -119,6 +119,7 @@ Nosso primeiro passo é escrever um HTML inicial para nossa aplicação, então 
 ```
 
 Adicionamos algumas classes para poder manipular estes elementos posteriormente.
+
 Nosso objetivo inicial é que o nosso contador de palavras seja atualizado de acordo com a frase que está no HTML. Por exemplo, para a frase: "Alura: Cursos online de tecnologia que reinventam sua carreira.", ele deve mostrar 9 palavras. Para isso , vamos ter que começar a utilizar o JavaScript com jQuery.
 
 ### Primeiros passos com jQuery
@@ -136,7 +137,7 @@ alura-typer/
 │   │   ├── main.js
 │   │   └── jquery.js
 ```
-Devemos agora importá-lo, utilizando a tag <script> no final da tag <body>, no arquivo principal.html:
+Devemos agora importá-lo, utilizando a tag "script" no final da tag "body", no arquivo principal.html:
 
 ```html
 <--! Resto do código HTML -->
@@ -164,7 +165,7 @@ Repare que importamos o jQuery acima do main.js, já que queremos utilizar a fun
 
 Para contarmos quantas palavras nossa frase tem, temos que ter acesso a ela dentro do nosso main.js. Precisamos selecionar o elemento do HTML dentro do JavaScript, e para isto nós vamos utilizar a função seletora do jQuery: A própria função jQuery().
 
-Como o nosso parágrafo tem a classe frase (<p class="frase">...</p>), nós vamos utilizar esse seletor CSS na nossa função jQuery():
+Como o nosso parágrafo tem a classe frase ("p class="frase""..."/p"), nós vamos utilizar esse seletor CSS na nossa função jQuery():
 
 ```javascript
 //main.js
@@ -193,7 +194,7 @@ Vemos que o código continua funcionando igualmente.
 
 #### Acessando o conteúdo de texto: função .text()
 
-Mas o que estamos interessados é no conteúdo textual da tag <p>, ou seja o que está escrito de fato na frase.
+Mas o que estamos interessados é no conteúdo textual da tag "p", ou seja o que está escrito de fato na frase.
 
 Para conseguir acessar o texto da frase, vamos utilizar a função .text() do jQuery, que nos retorna o conteúdo de texto do elemento em formato de string, veja:
 
@@ -205,7 +206,7 @@ console.log(frase);
 Lorem ipsum dolor sit amet, consectetur adipiscing...
 ```
 
-Agora estamos salvando na variável o conteúdo em si da tag <p>, uma string com a frase que queremos contar o número de palavras!
+Agora estamos salvando na variável o conteúdo em si da tag "p", uma string com a frase que queremos contar o número de palavras!
 
 #### Contando as palavras
 
@@ -305,7 +306,7 @@ Abra a pasta alura-typer/ no seu editor e o principal.html em seu navegador e va
 
 ### Mãos na massa: Contando as palavras da frase e atualizando o seu contador
 
-Agora podemos começar o desenvolvimento da página principal.html, o primeiro passo é escrever um HTML inicial, com o título da nossa aplicação, uma frase , e uma <ul> que conterá o número de caracteres e de palavras da frase, e algumas classes para manipular os elementos mais adiante:
+Agora podemos começar o desenvolvimento da página principal.html, o primeiro passo é escrever um HTML inicial, com o título da nossa aplicação, uma frase , e uma "ul" que conterá o número de caracteres e de palavras da frase, e algumas classes para manipular os elementos mais adiante:
 
 ```html
 <body>
@@ -319,7 +320,7 @@ Agora podemos começar o desenvolvimento da página principal.html, o primeiro p
 </body>
 ```
 
-Para atualizar os contadores de acordo com a frase que está no HTML, teremos que começar a utilizar o Javascript com jQuery. Então vamos criar um arquivo que conterá nosso código, o arquivo main.js dentro da pasta public/js, e vamos importá-lo na página principal.html, como último elemento da tag <body>. 
+Para atualizar os contadores de acordo com a frase que está no HTML, teremos que começar a utilizar o Javascript com jQuery. Então vamos criar um arquivo que conterá nosso código, o arquivo main.js dentro da pasta public/js, e vamos importá-lo na página principal.html, como último elemento da tag "body". 
 
 Vamos aproveitar para importar o jQuery também, como queremos usar as suas dentro no main.js, vamos importá-lo como primeiro script:
 
@@ -671,7 +672,7 @@ campo.on("focus", function() {
 });
 ```
 
-Se queremos que o tempo decresça, temos que saber o seu valor. Para isso, na página principal.html, vamos envolver o tempo em uma tag <span>, e colocar o id tempo-digitacao:
+Se queremos que o tempo decresça, temos que saber o seu valor. Para isso, na página principal.html, vamos envolver o tempo em uma tag "span", e colocar o id tempo-digitacao:
 ```html
 <ul class="informacoes">
     <li><span id="tamanho-frase">5</span> palavras</li>
@@ -826,7 +827,7 @@ campo.one("focus", function() {
 Implementando a lógica de Game Over
 Assim que o usuário clicar no campo de digitação, deve começar a contagem regressiva do jogo. Como apresentado no video, vamos implementar essa funcionalidade:
 
-1) Abra o arquivo principal.html e envolva o tempo em uma tag <span>, colocando o id tempo-digitacao. Adicione o elemento span apenas dentro da segunda li:
+1) Abra o arquivo principal.html e envolva o tempo em uma tag "span", colocando o id tempo-digitacao. Adicione o elemento span apenas dentro da segunda li:
 ```html
 <ul class="informacoes">
     <li><span id="tamanho-frase">5</span> palavras</li>
@@ -1024,7 +1025,7 @@ function reinicializaJogo() {
 
 Queremos dar a opção do nosso usuário reiniciar o nosso jogo sem ter que recarregar a página, e para isto vamos implementar um pequeno botão, que ao ser clicado, vai zerar os nosso campos e contadores, permitindo o usuário iniciar uma nova rodada no jogo.
 
-Como primeiro passo, vamos adicionar um <button> no nosso HTML, abaixo da <textarea>:
+Como primeiro passo, vamos adicionar um "button" no nosso HTML, abaixo da "textarea":
 ```html
 <!-- Restante do HTML -->
 
@@ -1089,9 +1090,9 @@ $("#botao-reiniciar").click(function(){
 
 A função .attr() nos permite colocar, retirar ou modificar valores de atributos de elementos HTML.
 
-Agora com o campo digitável, precisamos zera-lo, pois ele ainda contêm os resquicíos da ultima jogada do nosso usuário. Queremos que o conteúdo da <textarea> seja zerado, fique vazio.
+Agora com o campo digitável, precisamos zera-lo, pois ele ainda contêm os resquicíos da ultima jogada do nosso usuário. Queremos que o conteúdo da "textarea" seja zerado, fique vazio.
 
-Sabemos que para manipular o conteúdo de um elemento de input do usuário, como a <textarea>, temos que utilizar a função .val(), e como queremos que ela fique vazia , faremos assim:
+Sabemos que para manipular o conteúdo de um elemento de input do usuário, como a "textarea", temos que utilizar a função .val(), e como queremos que ela fique vazia , faremos assim:
 ```javascript
 //main.js
 
@@ -1108,7 +1109,7 @@ Agora nosso campo está limpo e pode ser digitado novamente.
 
 Nosso próximo passo é retornar os contadores para seu estado inicial, ou seja, com zero palavras.
 
-Este é mais fácil, basta selecionar os dois contadores e substituir o texto dos <span> por 0.
+Este é mais fácil, basta selecionar os dois contadores e substituir o texto dos "span" por 0.
 
 ```javascript
 //main.js
@@ -1362,7 +1363,7 @@ E nossa função de reiniciar funciona corretamente, fazendo com que nosso usuá
 
 ####Criando o botão reiniciar
 
-1) Como primeiro passo, adicione um <button> na página principal.html, logo abaixo da <textarea>:
+1) Como primeiro passo, adicione um "button" na página principal.html, logo abaixo da "textarea":
 ```html
 <button id="botao-reiniciar">Reiniciar Jogo</button>
 ```
@@ -1609,7 +1610,7 @@ Adicionando alguns estilos ao nosso jogo
 
 Dentro da pasta do projeto, public/css/libs, temos o arquivo materialize.min.css. O Materialize é uma framework front-end, assim como o Bootstrap, e nos auxiliará a estilizar o nosso jogo, evitando assim uma grande perda de tempo nessa tarefa.
 
-Então vamos importá-lo na página principal.html, dentro da tag <head>:
+Então vamos importá-lo na página principal.html, dentro da tag "head":
 
 ```html
 <head>
@@ -1702,7 +1703,7 @@ if (tempoRestante < 1) {
 #### Adicionando ícones
 
 O que está faltando agora no nosso jogo para realmente ficar parecido com o Alura Typer pronto são os ícones e botões coloridos que estão nele. Você pode ver como utilizar esses ícones aqui, no site no Materialize.
-O primeiro passo é importar a fonte de ícones, nós podemos copiar o link que está no site, ou utilizar a fonte que já está no projeto, dentro da pasta public/css/libs. Vamos então importá-la dentro da tag <head>, na página principal.html:
+O primeiro passo é importar a fonte de ícones, nós podemos copiar o link que está no site, ou utilizar a fonte que já está no projeto, dentro da pasta public/css/libs. Vamos então importá-la dentro da tag "head", na página principal.html:
 ```html
 <head>
     <meta charset="UTF-8">
@@ -1713,7 +1714,7 @@ O primeiro passo é importar a fonte de ícones, nós podemos copiar o link que 
 </head>
 ```
 
-Agora, para utilizar os ícones, temos que adicionar uma tag <i> com as classes small (referente ao tamanho do ícone, há também os tamanhos tiny, small, medium e large) e material-icons. Dentro da tag nós colocamos o nome do ícone que queremos (a lista se encontra no site). Os ícones que utilizaremos para o contador do tamanho da frase e para o cronômetro são o description e query_builder, respectivamente.
+Agora, para utilizar os ícones, temos que adicionar uma tag "i" com as classes small (referente ao tamanho do ícone, há também os tamanhos tiny, small, medium e large) e material-icons. Dentro da tag nós colocamos o nome do ícone que queremos (a lista se encontra no site). Os ícones que utilizaremos para o contador do tamanho da frase e para o cronômetro são o description e query_builder, respectivamente.
 Além disso, vamos deixar o nosso ul centraliado. Logo, nossa ul de informações ficará assim:
 
 ```html
@@ -1729,7 +1730,7 @@ Além disso, vamos deixar o nosso ul centraliado. Logo, nossa ul de informaçõe
 </ul>
 ```
 
-Falta deixar os ícones alinhados com o seu respectivo texto, para isso vamos adicionar a classe icones às duas tags <i> e adicionar o seguinte código no estilos.css:
+Falta deixar os ícones alinhados com o seu respectivo texto, para isso vamos adicionar a classe icones às duas tags "i" e adicionar o seguinte código no estilos.css:
 ```css
 .icones {
     vertical-align: middle;
@@ -1758,7 +1759,7 @@ O próximo passo agora é modificar o layout do botão de reinício de jogo. Par
     <i class="material-icons">add</i>
 </a>
 ```
-Para terminar, vamos colocar o id do nosso antigo botão (botao-reiniciar) na tag <a> e utilizar um ícone mais expressivo, o restore:
+Para terminar, vamos colocar o id do nosso antigo botão (botao-reiniciar) na tag "a" e utilizar um ícone mais expressivo, o restore:
 ```html
 <a id="botao-reiniciar" class="btn-floating btn-large waves-effect waves-light red">
     <i class="material-icons">restore</i>
@@ -2082,7 +2083,7 @@ function reiniciaJogo() {
 
 #### Mãos na massa: Usando ícones
 O próximo passo é usar os ícones e colorir mais a página. Vamos aproveitar o framework materialize para essa tarefa.
-1) O primeiro passo é importar a fonte de ícones. Abra a página principal.html e adicione na tag <head> mais um estilo:
+1) O primeiro passo é importar a fonte de ícones. Abra a página principal.html e adicione na tag "head" mais um estilo:
 ```html
 <head>
     <meta charset="UTF-8">
@@ -2221,7 +2222,9 @@ if(digitado == comparavel) {
 ```
 
 Como o JavaScript está evoluindo e melhorando já existe uma forma mais fácil de verificar se uma string faz parte da outra string. Se o seu navegador já dar suporte ao ECMA Script 6 você pode simplesmente executar:
+
 ```javascript
+
  var digitouCorreto = frase.startsWith(digitado);
 if(digitouCorreto) {
  campo.addClass("borda-verde");
@@ -2229,16 +2232,20 @@ if(digitouCorreto) {
  campo.addClass("borda-vermelha");
 }
 ```
+
 Ainda mais enxuto:
+
 ```javascript
 if( frase.startsWith(digitado)) {
  campo.addClass("borda-verde");
 } else {
  campo.addClass("borda-vermelha");
 }
-```` 
+``` 
 A função startsWith devolve true ou false, se a frase começa com o valor digitado ou não. Teste isso agora no console, digitando por exemplo:
+
 ```javascript
+
 "ECMA Script 6".startsWith("ECMA")
 ```
 #### Para saber mais: Materialize e Bootstrap
@@ -2265,7 +2272,7 @@ http://getbootstrap.com/
 #### Criando o placar
 Neste capítulo queremos que a pontuação do usuário seja salva ao final de cada jogada dele. Para isto, vamos montar um placar: Uma pequena tabela que deve ficar na parte de baixo da nossa aplicação, que salvará o número de palavras digitadas e o nome do usuário a cada jogada dele.
 
-Primeiramente, vamos montar a estrutura HTML necessária para comportar o placar, montando uma <section> e dentro dele colocando uma tabela que terá o nome do usuário e número de palavras digitadas.
+Primeiramente, vamos montar a estrutura HTML necessária para comportar o placar, montando uma "section" e dentro dele colocando uma tabela que terá o nome do usuário e número de palavras digitadas.
 ```html
 <section class="placar">
     <h3>Placar</h3>
@@ -2337,7 +2344,7 @@ function inserePlacar(){
 }
 ```
 
-Em seguida, queremos obter o tbody que fica dentro da <table>, que por sua vez está dentro da <section>. Quando queremos buscar filhos de um elemento que já selecionamos previamente, podemos utilizar a função .find() do jQuery, que funciona de modo semelhante a função seletora ($), porém fazendo a busca apenas do filho do elemento:
+Em seguida, queremos obter o tbody que fica dentro da "table", que por sua vez está dentro da "section". Quando queremos buscar filhos de um elemento que já selecionamos previamente, podemos utilizar a função .find() do jQuery, que funciona de modo semelhante a função seletora ($), porém fazendo a busca apenas do filho do elemento:
 ```javascript
 //main.js
 
@@ -2369,7 +2376,7 @@ function inserePlacar(){
 }
 ```
 
-Com os dados obtidos, vamos dar inicio a criação da nossa linha, que deve ser um <tr> com dois <td> dentro , cada um com uma informação. Vamos começar a criando esta estrutura como uma string:
+Com os dados obtidos, vamos dar inicio a criação da nossa linha, que deve ser um "tr" com dois "td" dentro , cada um com uma informação. Vamos começar a criando esta estrutura como uma string:
 ```javascript
 //main.js
 
@@ -2441,7 +2448,7 @@ Assim o placar mais recente do usuário aparece como primeiro item da lista.
 ### Criando um botão remover
 
 Agora que estamos conseguindo adicionar item a nossa tabela placar, também precisamos dar a opção do usuário de remover alguma das linhas que ele desejar.
-Para isto, vamos adicionar um pequeno botão de remover em cada linha da tabela, como uma terceira coluna. Ele será um link representado por um icone de lixeira , que pegaremos do framework que estamos utilizando para estilizar. Vamos adiciona-lo dentro de um <td>, como uma nova coluna da tabela:
+Para isto, vamos adicionar um pequeno botão de remover em cada linha da tabela, como uma terceira coluna. Ele será um link representado por um icone de lixeira , que pegaremos do framework que estamos utilizando para estilizar. Vamos adiciona-lo dentro de um "td", como uma nova coluna da tabela:
 
 ```html
 <tr>
@@ -2474,7 +2481,7 @@ function inserePlacar() {
 
 Primeiro criamos o botão com uma string, depois adicionamos-o como uma terceira linha da coluna.
 Com o botão aparecendo um nossa página tanto nas linhas que já vem no placar quanto as que são criadas no fim do jogo, vamos começar a adicionar um evento de click em nossos botões:
-Primeiramente, vamos adicionar uma classe à tag <a>:
+Primeiramente, vamos adicionar uma classe à tag "a":
 ```html
 <a href="#" class="botao-remover">
     <i class="small material-icons">delete</i>
@@ -2490,8 +2497,8 @@ $(".botao-remover").click(function(){
 
 #### Prevenindo o salto da tela
 
-Repare que ao clicar no icone de remoção, além de exibir a mensagem no console a página salta para o topo. Isso acontece pois quando clicamos em uma tag <a> ela tem o comportamento de redirecionar para o que estiver em seu atributo href, seja um link ou um ID de um elemento HTML. Neste caso, estamos com o valor de "#" no href, o que faz com que seja redirecionado pro topo da página. Se o href fosse o id de algum elemento, a visualização iria saltar para este elemento.
-Este é um comportamento padrão da tag <a>, mas neste caso , queremos evita-lo. Conseguimos fazer isto através da função preventDefault(). Vamos alterar nosso evento para receber um parâmetro que permite usa-la:
+Repare que ao clicar no icone de remoção, além de exibir a mensagem no console a página salta para o topo. Isso acontece pois quando clicamos em uma tag "a" ela tem o comportamento de redirecionar para o que estiver em seu atributo href, seja um link ou um ID de um elemento HTML. Neste caso, estamos com o valor de "#" no href, o que faz com que seja redirecionado pro topo da página. Se o href fosse o id de algum elemento, a visualização iria saltar para este elemento.
+Este é um comportamento padrão da tag "a", mas neste caso , queremos evita-lo. Conseguimos fazer isto através da função preventDefault(). Vamos alterar nosso evento para receber um parâmetro que permite usa-la:
 ```javascript
 $(".botao-remover").click(function(event){
     event.preventDefault();
@@ -2520,8 +2527,8 @@ $(".botao-remover").click(event, function(){
 ```
 
 Deste modo o this (elemento HTML que foi clicado), ganha acesso as várias funções do jQuery, como .text(),.val(), .css() e todas as outras funções do jQuery.
-Só que o código acima não resolve nosso problema, se você clicou no botão remover, você vai ver que apenas o icone de lixeira sumiu! O linha com a pontuação do usuário continua lá. Isto acontece pois estamos chamando a função .remove() na tag <a>, quem é quem foi clicada!
-O que nós desejamos é clicar na tag <a> e remover a linha inteira, que é a <tr>! Só que a <tr> é um elemento acima da tag no HTML , veja:
+Só que o código acima não resolve nosso problema, se você clicou no botão remover, você vai ver que apenas o icone de lixeira sumiu! O linha com a pontuação do usuário continua lá. Isto acontece pois estamos chamando a função .remove() na tag "a", quem é quem foi clicada!
+O que nós desejamos é clicar na tag "a" e remover a linha inteira, que é a "tr"! Só que a "tr" é um elemento acima da tag no HTML , veja:
 ```html
 <tr>
     <td>Padrao</td>
@@ -2534,7 +2541,7 @@ O que nós desejamos é clicar na tag <a> e remover a linha inteira, que é a <t
 </tr>
 ```
 
-O elemento pai da <a> é uma <td> , e a linha é o elemento dois níveis acima, ou seja , a <tr>. Para acessarmos um elemento acima do elemento selecionado com jQuery, um elemento pai, temos a função .parent() do Javascript, veja:
+O elemento pai da "a" é uma "td" , e a linha é o elemento dois níveis acima, ou seja , a "tr". Para acessarmos um elemento acima do elemento selecionado com jQuery, um elemento pai, temos a função .parent() do Javascript, veja:
 
 ```javascript
 $(".botao-remover").click(){
@@ -2542,14 +2549,14 @@ $(".botao-remover").click(){
 }
 ```
 
-O elemento $(this).parent() é o <td>, como queremos remover a linha inteira, que é o <tr>, vamos subir mais um nível da na árvore do HTML utilizando a função .parent() duas vezes:
+O elemento $(this).parent() é o "td", como queremos remover a linha inteira, que é o "tr", vamos subir mais um nível da na árvore do HTML utilizando a função .parent() duas vezes:
 ```javascript
 $(".botao-remover").click(){
     $(this).parent().parent().remove();
 }
 ```
 
-Agora sim nossa linha é removida corretamente quando clicamos no tag <a>!
+Agora sim nossa linha é removida corretamente quando clicamos no tag "a"!
 
 ### Adicionando eventos nas linhas do placar
 
@@ -2591,7 +2598,7 @@ function novaLinha(){
 Assim a variável linha será de fato um! Como se estivéssemos selecionado no HTML! 
 
 Isso irá nos permitir criar cada elemento da linha individualmente, depois juntá-los, atrelar o evento de remoção e aí sim coloca-lo no HTML.
-Vamos criar nossas colunas, primeiro a coluna de usuário, que será um <td> que tem como texto o nome do usuário.
+Vamos criar nossas colunas, primeiro a coluna de usuário, que será um "td" que tem como texto o nome do usuário.
 ```javascript
 function novaLinha(){
     var linha = $("<tr>");
@@ -2813,7 +2820,7 @@ function novaLinha() {
 }
 ```
 
-Assim a variável linha será de fato um <tr>, como se estivéssemos acabado de selecionar um no HTML. Vamos montar o resto da tabela com as informações do usuário e o placar, mas como não temos essas informações na função, vamos recebê-las por paramêtro:
+Assim a variável linha será de fato um "tr", como se estivéssemos acabado de selecionar um no HTML. Vamos montar o resto da tabela com as informações do usuário e o placar, mas como não temos essas informações na função, vamos recebê-las por paramêtro:
 ```javascript
 function inserePlacar(){
     var corpoTabela = $(".placar").find("tbody");
@@ -2914,7 +2921,7 @@ Agora toda ação que deve ser feita ao final de cada jogo pode ser adicionada n
 
 ### Mãos na massa: Removendo linhas do placar
 
-Já estamos adicionando linhas no nosso placar, então agora devemos ter a opção de removê-las. Para isto, vamos adicionar um pequeno botão de remoção em cada linha da tabela, ele será um link estilizado pelo Materialize. Vamos adicioná-lo dentro de um <td>, como uma nova coluna da tabela, e adicionar um novo <th> para referenciá-lo:
+Já estamos adicionando linhas no nosso placar, então agora devemos ter a opção de removê-las. Para isto, vamos adicionar um pequeno botão de remoção em cada linha da tabela, ele será um link estilizado pelo Materialize. Vamos adicioná-lo dentro de um "td", como uma nova coluna da tabela, e adicionar um novo "th" para referenciá-lo:
 ```html
 <section class="placar">
     <h3 class="center">Placar</h3>
@@ -3024,7 +3031,7 @@ function inserePlacar() {
 }
 ```
 
-Se clicarmos no ícone da lixeira, veremos que somente a mesma sumiu! Isto acontece pois estamos chamando a função remove() na tag <a>, que é quem foi clicada! Para remover a linha inteira, vamos olhar a estrutura HTML, e ver que a tag <tr> é pai do pai da tag <a>. Para acessar o pai com o jQuery, utilizamos a função parent(). Logo, vamos chamá-la duas vezes na hora de remover:
+Se clicarmos no ícone da lixeira, veremos que somente a mesma sumiu! Isto acontece pois estamos chamando a função remove() na tag "a", que é quem foi clicada! Para remover a linha inteira, vamos olhar a estrutura HTML, e ver que a tag "tr" é pai do pai da tag "a". Para acessar o pai com o jQuery, utilizamos a função parent(). Logo, vamos chamá-la duas vezes na hora de remover:
 
 ```javascript
 function removeLinha() {
