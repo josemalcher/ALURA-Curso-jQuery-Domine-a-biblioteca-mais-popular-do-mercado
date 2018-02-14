@@ -37,14 +37,20 @@ function inicializaCronometro() {
             //console.log(tempoRestante);
             $("#tempo-digitacao").text(tempoRestante);
             if (tempoRestante < 1) {
-                campo.attr("disabled", true);
-                clearInterval(cronometroID);
-                //campo.addClass("campo-desativado");
-                campo.toggleClass("campo-desativado");
+               clearInterval(cronometroID);
+               finalizaJogo();
             }
         }, 1000);
     });
 }
+
+function finalizaJogo(){
+    campo.attr("disabled", true);
+    //campo.addClass("campo-desativado");
+    campo.toggleClass("campo-desativado");
+    inserePlacar();
+}
+
 
 function inicializaMarcadores() {
     var frase = $(".frase").text();

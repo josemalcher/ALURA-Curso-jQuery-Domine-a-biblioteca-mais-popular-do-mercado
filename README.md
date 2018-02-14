@@ -2260,6 +2260,832 @@ http://getbootstrap.com/
 
 ## <a name="parte6">6.Criando e manipulando elementos com jQuery</a>
 
+### Salvando a pontuação no placar
+
+#### Criando o placar
+Neste capítulo queremos que a pontuação do usuário seja salva ao final de cada jogada dele. Para isto, vamos montar um placar: Uma pequena tabela que deve ficar na parte de baixo da nossa aplicação, que salvará o número de palavras digitadas e o nome do usuário a cada jogada dele.
+
+Primeiramente, vamos montar a estrutura HTML necessária para comportar o placar, montando uma <section> e dentro dele colocando uma tabela que terá o nome do usuário e número de palavras digitadas.
+```html
+<section class="placar">
+    <h3>Placar</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Usuário</th>
+                <th>No. de palavras</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Usuario Exemplo</td>
+                <td>99</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+```
+Vamos aproveitar e colocar algumas classes da nossa framework frontend para que a tabela tenha algum estilo:
+```html
+<section class="placar">
+    <h3 class="center">Placar</h3>
+    <table class="centered bordered">
+        <thead>
+            <tr>
+                <th>Usuário</th>
+                <th>No. de palavras</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Usuario Exemplo</td>
+                <td>99</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+```
+Com a estrutura da tabela montada, podemos partir para o Javascript, aonde criaremos a função responsável de inserir no placar. Em seu main.js crie a função inserePlacar:
+```javascript
+//main.js
+
+function inserePlacar(){
+    console.log("Linha inserida no placar");    
+}
+```
+
+Devemos chamar esta função ao término do nosso jogo, ou seja, quando o tempo chegar a zero. Sabemos exatamente aonde isto acontece, na função inicializaCronometro, em seu if:
+```javascript
+//main.js
+// Restante do código
+if(tempoRestante < 1){
+    clearInterval(cronometroID);
+    campo.attr("disabled",true);
+    campo.toggleClass("campo-desativado");
+    inserePlacar();
+}
+```
+
+#### Buscando nos filhos com jQuery
+
+Na função inserePlacar(), precisamos buscar pelo corpo da tabela, que é de fato aonde queremos inserir novas linhas com a pontuação do usuário. Vamos primeiro selecionar a section placar inteira:
+```javascript
+//main.js
+
+function inserePlacar(){
+    var placar = $(".placar");
+}
+```
+
+Em seguida, queremos obter o tbody que fica dentro da <table>, que por sua vez está dentro da <section>. Quando queremos buscar filhos de um elemento que já selecionamos previamente, podemos utilizar a função .find() do jQuery, que funciona de modo semelhante a função seletora ($), porém fazendo a busca apenas do filho do elemento:
+```javascript
+//main.js
+
+function inserePlacar(){
+    var placar = $(".placar");
+    var corpoTabela = placar.find("tbody");
+}
+```
+A função .find() recebe como parâmetro seletores CSS, e busca em seus filhos algum elemento que atenda aquela busca. Podemos simplificar e fazer tudo em uma linha apenas:
+```javascript
+//main.js
+
+function inserePlacar(){
+    var corpoTabela = $(".placar").find("tbody");
+}
+```
+
+#### Criando uma nova linha
+
+Como queremos criar uma nova linha na tabela, com o nome do usuário e o número de palavras, precisamos pegar essas informações:
+
+```javascript
+//main.js
+
+function inserePlacar(){
+    var corpoTabela = $(".placar").find("tbody");
+    var usuario = "Seu-nome";
+    var numPalavras = $("#contador-palavras").text();
+}
+```
+
+Com os dados obtidos, vamos dar inicio a criação da nossa linha, que deve ser um <tr> com dois <td> dentro , cada um com uma informação. Vamos começar a criando esta estrutura como uma string:
+```javascript
+//main.js
+
+function inserePlacar(){
+    var corpoTabela = $(".placar").find("tbody");
+    var usuario = "Seu-nome";
+    var numPalavras = $("#contador-palavras").text();
+
+    var linha = "<tr>"+
+                    "<td>"+ usuario + "</td>"+
+                    "<td>"+ numPalavras + "</td>"+
+                "</tr>";
+}
+```
+Repare que concatenamos com pedaços da string com o nossas variáveis, que continham os dados, pois nosso objetivo final é ter algo assim:
+```html
+<tr>
+    <td>Douglas</td>
+    <td>99</td>
+</tr>
+```
+
+#### Adicionando HTML na página com jQuery
+
+Com nossa linha criada, precisamos adicioná-la ao corpo da tabela, e para isto vamos utilizar a função .append() do jQuery. Esta função adiciona a string ou elemento HTML que é passada como parâmetro como último filho do elemento em qual ela for chamada.
+Vamos a linha como última filha do tbody:
+
+```javascript
+//main.js
+
+function inserePlacar(){
+    var corpoTabela = $(".placar").find("tbody");
+    var usuario = "Seu-nome";
+    var numPalavras = $("#contador-palavras").text();
+
+    var linha = "<tr>"+
+                    "<td>"+ usuario + "</td>"+
+                    "<td>"+ numPalavras + "</td>"+
+                "</tr>";
+
+    corpoTabela.append(linha);
+}
+```
+
+Agora, ao final do jogo, uma nova linha é criada e adicionada ao corpo da tabela, contendo o nome do usuário e número de palavras.
+Adicionando como primeiro item
+
+Se quisermos adicionar a nova linha como primeiro item da tabela, devemos utilizar uma função que é prima da função .append(), que é a .prepend(). Ela adiciona a string/HTML passada como primeiro filho do elemento selecionado:
+```javascript
+//main.js
+
+function inserePlacar(){
+    var corpoTabela = $(".placar").find("tbody");
+    var usuario = "Seu-nome";
+    var numPalavras = $("#contador-palavras").text();
+
+    var linha = "<tr>"+
+                    "<td>"+ usuario + "</td>"+
+                    "<td>"+ numPalavras + "</td>"+
+                "</tr>";
+
+    corpoTabela.prepend(linha);
+}
+```
+
+Assim o placar mais recente do usuário aparece como primeiro item da lista.
+
+
+### Criando um botão remover
+
+Agora que estamos conseguindo adicionar item a nossa tabela placar, também precisamos dar a opção do usuário de remover alguma das linhas que ele desejar.
+Para isto, vamos adicionar um pequeno botão de remover em cada linha da tabela, como uma terceira coluna. Ele será um link representado por um icone de lixeira , que pegaremos do framework que estamos utilizando para estilizar. Vamos adiciona-lo dentro de um <td>, como uma nova coluna da tabela:
+
+```html
+<tr>
+    <td>Padrao</td>
+    <td>999</td>
+    <td>
+        <a href="#">
+            <i class="small material-icons">delete</i>
+        </a>
+    </td>    
+</tr>
+```
+Mas deixando-o estático, ele irá aparecer apenas nas pontuações que já vem no principal.html. Vamos alterar a nossa função inserePlaca() para adicionar um botão de remoção na linha também:
+```javascript
+function inserePlacar() {
+    var corpoTabela = $(".placar").find("tbody");
+    var usuario = "Douglas"
+    var numPalavras = $("#contador-palavras").text();
+    var botaoRemover = "<a href='#'><i class='small material-icons'>delete</i></a>" ;
+
+    var linha = "<tr>"+
+                    "<td>"+ usuario + "</td>"+
+                    "<td>"+ numPalavras + "</td>"+
+                    "<td>"+ botaoRemover + "</td>"+
+                "</tr>";
+
+    corpoTabela.append(linha);
+}
+```
+
+Primeiro criamos o botão com uma string, depois adicionamos-o como uma terceira linha da coluna.
+Com o botão aparecendo um nossa página tanto nas linhas que já vem no placar quanto as que são criadas no fim do jogo, vamos começar a adicionar um evento de click em nossos botões:
+Primeiramente, vamos adicionar uma classe à tag <a>:
+```html
+<a href="#" class="botao-remover">
+    <i class="small material-icons">delete</i>
+</a>
+```
+
+E vamos adicionar um evento de click no main.js:
+```javascript
+$(".botao-remover").click(function(){
+    console.log("Fui clicado");
+})
+```
+
+#### Prevenindo o salto da tela
+
+Repare que ao clicar no icone de remoção, além de exibir a mensagem no console a página salta para o topo. Isso acontece pois quando clicamos em uma tag <a> ela tem o comportamento de redirecionar para o que estiver em seu atributo href, seja um link ou um ID de um elemento HTML. Neste caso, estamos com o valor de "#" no href, o que faz com que seja redirecionado pro topo da página. Se o href fosse o id de algum elemento, a visualização iria saltar para este elemento.
+Este é um comportamento padrão da tag <a>, mas neste caso , queremos evita-lo. Conseguimos fazer isto através da função preventDefault(). Vamos alterar nosso evento para receber um parâmetro que permite usa-la:
+```javascript
+$(".botao-remover").click(function(event){
+    event.preventDefault();
+    console.log("Fui clicado");
+})
+```
+
+Experimente clicar no botão agora, você verá que apenas a mensagem é exibida e a tela parou de saltar.
+#### Removendo a linha
+
+Agora que estamos detectando o evento de click, partiremos para a remoção da linha. Pare remover um elemento do HTML , podemos utiliza a função com nome semelhante do jQuery, a .remove().
+
+Se no nosso evento de click, utilizarmos ela para remover quem foi clicado, que pode ser acessado através do this:
+```javascript
+$(".botao-remover").click(event, function(){
+    this.remove();
+})
+```
+
+Vamos obter um erro clássico de quando estamos trabalhando com jQuery. Tentamos utilizar uma função do jQuery em um elemento do HTML. Elementos comuns do HTML não tem acesso as funções do jQuery, precisamos empoderá-los com as funções do objeto jQuery, envolvendo-os com a função jQuery:
+
+```javascript
+$(".botao-remover").click(event, function(){
+    $(this).remore();
+})
+```
+
+Deste modo o this (elemento HTML que foi clicado), ganha acesso as várias funções do jQuery, como .text(),.val(), .css() e todas as outras funções do jQuery.
+Só que o código acima não resolve nosso problema, se você clicou no botão remover, você vai ver que apenas o icone de lixeira sumiu! O linha com a pontuação do usuário continua lá. Isto acontece pois estamos chamando a função .remove() na tag <a>, quem é quem foi clicada!
+O que nós desejamos é clicar na tag <a> e remover a linha inteira, que é a <tr>! Só que a <tr> é um elemento acima da tag no HTML , veja:
+```html
+<tr>
+    <td>Padrao</td>
+    <td>999</td>
+    <td>
+        <a href="#">
+            <i class="small material-icons">delete</i>
+        </a>
+    </td>    
+</tr>
+```
+
+O elemento pai da <a> é uma <td> , e a linha é o elemento dois níveis acima, ou seja , a <tr>. Para acessarmos um elemento acima do elemento selecionado com jQuery, um elemento pai, temos a função .parent() do Javascript, veja:
+
+```javascript
+$(".botao-remover").click(){
+    $(this).parent().remove();
+}
+```
+
+O elemento $(this).parent() é o <td>, como queremos remover a linha inteira, que é o <tr>, vamos subir mais um nível da na árvore do HTML utilizando a função .parent() duas vezes:
+```javascript
+$(".botao-remover").click(){
+    $(this).parent().parent().remove();
+}
+```
+
+Agora sim nossa linha é removida corretamente quando clicamos no tag <a>!
+
+### Adicionando eventos nas linhas do placar
+
+#### Criando uma linha removível
+
+Apesar de já conseguirmos remover uma linha que já vem por padrão no placar, a remoção ainda não funciona para as linhas que são geradas ao término de cada jogo. Isso se dá por que não atrelamos o evento de remoção depois de adicionar a linha ao placar. E nem conseguimos fazer isto, pois a nossa linha é apenas uma string antes de ser adicionada no HTML. Só conseguimos atrelar eventos à elementos!
+
+#### Criando um <tr> dentro do Javascript
+
+Por isso, vamos mudar o modo de criação da linha e vamos criar um elemento HTML, que será nossa linha, dentro do Javascript antes de colocá-la no placar.
+Vamos criar uma função chamada novaLinha():
+```javascript
+function novaLinha(){
+
+}
+```
+
+E vamos chamá-la na dentro da função inserePlacar(), no local de criação da linha antiga:
+```javascript
+function inserePlacar() {
+    var corpoTabela = $(".placar").find("tbody");
+    var usuario = "Douglas"
+    var numPalavras = $("#contador-palavras").text();
+    var botaoRemover = "<a href='#'><i class='small material-icons'>delete</i></a>" ;
+
+    var linha = novaLinha();
+
+    corpoTabela.append(linha);
+}
+```
+
+Na função novaLinha() nosso objetivo será criar um elemento HTML em si, não apenas uma string, e para isto vamos utilizar a função jQuery $(), só que ao invés de passarmos um seletor, como fazemos por padrão, vamos passar a tag HTML que queremos criar. Veja:
+```javascript
+function novaLinha(){
+    var linha = $("<tr>");
+}
+```
+
+Assim a variável linha será de fato um! Como se estivéssemos selecionado no HTML! 
+
+Isso irá nos permitir criar cada elemento da linha individualmente, depois juntá-los, atrelar o evento de remoção e aí sim coloca-lo no HTML.
+Vamos criar nossas colunas, primeiro a coluna de usuário, que será um <td> que tem como texto o nome do usuário.
+```javascript
+function novaLinha(){
+    var linha = $("<tr>");
+    var colunaUsuario = $("<td>");
+}
+```
+
+Como não temos o nome do usuário nem o número de palavras nesta função, vamos recebê-los como parâmetros da função e passá-los na inserePlacar():
+```javascript
+function inserePlacar(){
+    ...
+    var usuario = "Douglas"
+    var numPalavras = $("#contador-palavras").text();
+    var botaoRemover = "<a href='#'><i class='small material-icons'>delete</i></a>" ;
+
+    var linha = novaLinha(usuario,numPalavras);
+    ...
+}
+
+function novaLinha(usuario,palavras){
+    var linha = $("<tr>");
+    var colunaUsuario = $("<td>");
+}
+```
+
+Agora com estas informações disponíveis na função novaLinha(), podemos criar as duas colunas com os textos apropriados dentro:
+```javascript
+function novaLinha(usuario,palavras){
+    var linha = $("<tr>");
+    var colunaUsuario = $("<td>").text(usuario);
+    var colunaPalavras = $("<td>").text(palavras);
+}
+```
+
+A última parte que temos que montar da nossa linha é o ícone de remoção, que possuí o seguinte HTML:
+```html
+<td>
+    <a href="#">
+        <i class="small material-icons">delete</i>
+    </a>
+</td>
+```
+
+Vamos começar a criar estes elementos com jQuery:
+
+```javascript
+function novaLinha(usuario,palavras){
+    var linha = $("<tr>");
+    var colunaUsuario = $("<td>").text(usuario);
+    var colunaPalavras = $("<td>").text(palavras);
+    var colunaRemover = $("<td>");
+
+    var link = $("<a>").attr("href","#");
+    var icone = $("<i>").addClass("small").addClass("material-icons").text("delete");
+}
+```
+Aqui utilizamos diversas funções do jQuery que já conhecemos para montar os elementos iguais a sua estrutura original do HTML.
+Agora basta posiciona-los corretamente com a função append():
+```javascript
+function novaLinha(usuario,palavras){
+    var linha = $("<tr>");
+    var colunaUsuario = $("<td>").text(usuario);
+    var colunaPalavras = $("<td>").text(palavras);
+    var colunaRemover = $("<td>");
+
+    var link = $("<a>").attr("href","#");
+    var icone = $("<i>").addClass("small").addClass("material-icons").text("delete");
+
+    // Icone dentro do <a>
+    link.append(icone);
+
+    // <a> dentro do <td>
+    colunaRemover.append(link);
+
+    // Os três <td> dentro do <tr>
+    linha.append(colunaUsuario);
+    linha.append(colunaPalavras);
+    linha.append(colunaRemover);
+}
+```
+Por último, vamos retornar a linha que foi criada pela nossa função:
+```javascript
+function novaLinha(usuario,palavras){
+    var linha = $("<tr>");
+    var colunaUsuario = $("<td>").text(usuario);
+    var colunaPalavras = $("<td>").text(palavras);
+    var colunaRemover = $("<td>");
+
+    var link = $("<a>").attr("href","#");
+    var icone = $("<i>").addClass("small").addClass("material-icons").text("delete");
+
+    link.append(icone);
+
+    colunaRemover.append(link);
+
+    linha.append(colunaUsuario);
+    linha.append(colunaPalavras);
+    linha.append(colunaRemover);
+
+    return linha;
+}
+```
+
+#### Adicionando o evento de remoção na linha recém criada:
+Agora que nossa função inserePlacar() tem acesso a um elemento do HTML, podemos finalmente atrelar o evento de click ao botão que fica dentro da linha. Vamos primeiro exportar nossa função de remoção para uma linha genérica:
+```javascript
+function removeLinha(event){
+    event.preventDefault();
+    $(this).parent().parent().remove();
+}
+```
+E chamar a função removeLinha para os botoes que estão dentro das linhas criadas. Como agora temos um elemento HTML, podemos utilizar o .find() para acha-los:
+
+```javascript
+function inserePlacar() {
+    var corpoTabela = $(".placar").find("tbody");
+    var usuario = "Douglas"
+    var numPalavras = $("#contador-palavras").text();
+    var botaoRemover = "<a href='#'><i class='small material-icons'>delete</i></a>" ;
+
+    var linha = novaLinha(usuario,numPalavras);
+    linha.find(".botao-remover").click(removeLinha);
+
+    corpoTabela.append(linha);
+}
+```
+Agora nossas linhas geradas pelo jogo podem ser deletadas normalmente! Podemos até mesmo remover as linhas que já vinham por padrão no nosso placar, deixando apenas as que foram geradas pela usuário!
+
+### Organizando o código da aplicação
+
+#### Quebrando o código em diferentes arquivos
+
+Com o aprimoramento do nosso projeto, o nosso main.js cresceu razoavelmente e se continuarmos nesse ritmo, ao final da aplicação teremos um arquivo com mais de 300 linhas de código, o que sabemos que não é uma boa prática.
+Vamos dividir um pouco este arquivo, em diversos arquivos .js menores, aonde cada arquivo será responsável por um área de nossa aplicação.
+
+#### As funções do placar
+
+Vamos criar o arquivo placar.js na pasta /js e importá-lo em principal.html:
+```html
+    <script src="js/jquery.js"></script>
+    <script src="js/materialize-min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/placar.js"></script>
+```
+
+Mova as funções inserePlacar(), novaLinha() e removeLinha() para o placar.js e teste se sua aplicação continua funcionando como antes.
+
+#### Código separado
+
+Daqui para frente, cada parte do nosso código ficará em um arquivo próprio, melhorando a organização de nossa aplicação!
+
+
+### Salvando a pontuação do usuário
+
+Para salvar a pontuação do usuário no final de cada jogada dele, precisamos primeiramente criar um placar. Para isso, no final da página principal.html, vamos adicionar uma tabela:
+```html
+<section class="placar">
+    <h3 class="center">Placar</h3>
+        <table class="centered bordered">
+            <thead>
+                <tr>
+                    <th>Usuário</th>
+                    <th>No. de palavras</th>
+                </tr>
+            </thead>
+        <tbody>
+            <tr>
+                <td>Usuario Exemplo</td>
+                <td>99</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+```
+
+Finalizada a estrutura do placar, podemos partir para o código JavaScript. No main.js, vamos criar a função inserePlacar() e acessar o nosso placar:
+```javascript
+function inserePlacar() {
+    var placar = $(".placar");
+}
+```
+
+Mas devemos inserir a pontuação no tbody, vamos então obtê-lo. Como tbody é um elemento filho do nosso placar, vamos utilizar a função find do jQuery, que funciona de modo semelhante a função seletora ($), porém fazendo a busca apenas do filho do elemento:
+```javascript
+function inserePlacar() {
+    var placar = $(".placar");
+    var corpoTabela = placar.find("tbody");
+}
+```
+
+Vamos simplificar fazendo tudo em uma linha e como queremos criar uma nova linha na tabela, com o nome do usuário e o número de palavras, vamos pegar essas informações:
+```javascript
+function inserePlacar(){
+    var corpoTabela = $(".placar").find("tbody");
+    var usuario = "Seu-nome";
+    var numPalavras = $("#contador-palavras").text();
+}
+```
+
+Precisamos agora inserir uma linha na tabela com esses dados, mas vamos realizar isso em uma função separada:
+```javascript
+function inserePlacar(){
+    var corpoTabela = $(".placar").find("tbody");
+    var usuario = "Seu-nome";
+    var numPalavras = $("#contador-palavras").text();
+
+    var linha = novaLinha();
+}
+
+function novaLinha() {
+
+}
+```
+
+Na função novaLinha() precisamos criar um elemento HTML, e para isto vamos utilizar a função jQuery $(), só que ao invés de passarmos um seletor, vamos passar a tag HTML que queremos criar:
+```javascript
+function novaLinha() {
+    var linha = $("<tr>");
+}
+```
+
+Assim a variável linha será de fato um <tr>, como se estivéssemos acabado de selecionar um no HTML. Vamos montar o resto da tabela com as informações do usuário e o placar, mas como não temos essas informações na função, vamos recebê-las por paramêtro:
+```javascript
+function inserePlacar(){
+    var corpoTabela = $(".placar").find("tbody");
+    var usuario = "Seu-nome";
+    var numPalavras = $("#contador-palavras").text();
+
+    var linha = novaLinha(usuario, numPalavras);
+}
+
+function novaLinha(usuario, palavras) {
+    var linha = $("<tr>");
+    var colunaUsuario = $("<td>").text(usuario);
+    var colunaPalavras = $("<td>").text(palavras);
+}
+```
+
+Com tudo pronto, precisamos adicionar os elementos HTML corretamente dentro da linha da tabela, para isso vamos utilizar a função append. Ela adiciona a string ou elemento HTML que é passada como parâmetro como último filho do elemento em qual for chamada:
+```javascript
+function novaLinha(usuario, palavras) {
+    var linha = $("<tr>");
+    var colunaUsuario = $("<td>").text(usuario);
+    var colunaPalavras = $("<td>").text(palavras);
+
+    // Os dois <td> dentro do <tr>
+    linha.append(colunaUsuario);
+    linha.append(colunaPalavras);
+}
+```
+
+E por último, vamos retornar a linha que foi criada pela nossa função:
+```javascript
+function novaLinha(usuario, palavras) {
+    var linha = $("<tr>");
+    var colunaUsuario = $("<td>").text(usuario);
+    var colunaPalavras = $("<td>").text(palavras);
+
+    // Os dois <td> dentro do <tr>
+    linha.append(colunaUsuario);
+    linha.append(colunaPalavras);
+
+    return linha;
+}
+```
+
+Com a linha devidamente criada, vamos adicioná-la no corpo da tabela:
+```javascript
+function inserePlacar() {
+    var corpoTabela = $(".placar").find("tbody");
+    var usuario = "Seu-nome";
+    var numPalavras = $("#contador-palavras").text();
+
+    var linha = novaLinha(usuario, numPalavras);
+
+    corpoTabela.append(linha);
+}
+```
+
+#### Chamando a inserePlacar
+A nossa função insere placar deve ser chamada ao fim de cada jogo, e isto ocorre quando tempo chega a zero, ou seja dentro do if da função inicializaCronometro :
+```javascript
+function inicializaCronometro() {
+    ...
+            if (tempoRestante < 1) {
+                clearInterval(cronometroID);
+
+                campo.attr("disabled", true);
+                campo.toggleClass("campo-desativado");
+                // Alteração aqui
+                inserePlacar();
+            }
+    ...
+}
+```
+
+Mas a função inicializaCronometro já está fazendo muitas coisas, vamos separar a responsabilidade de desabilitar o campo, colocar o fundo cinza e chamar o inserePlacar em uma outra função, a função finalizaJogo:
+```javascript
+function finalizaJogo() {
+    campo.attr("disabled", true);
+    campo.toggleClass("campo-desativado");
+    inserePlacar();
+}
+```
+
+E vamos chamar a função finalizaJogo dentro do if na inicializaCronometro substituindo as últimas linhas:
+```javascript
+function inicializaCronometro() {
+    ...
+            if (tempoRestante < 1) {
+                clearInterval(cronometroID);
+                //Alteração aqui
+                finalizaJogo();
+            }
+    ...
+}
+```
+
+Agora toda ação que deve ser feita ao final de cada jogo pode ser adicionada na função finalizaJogo.
+
+### Mãos na massa: Removendo linhas do placar
+
+Já estamos adicionando linhas no nosso placar, então agora devemos ter a opção de removê-las. Para isto, vamos adicionar um pequeno botão de remoção em cada linha da tabela, ele será um link estilizado pelo Materialize. Vamos adicioná-lo dentro de um <td>, como uma nova coluna da tabela, e adicionar um novo <th> para referenciá-lo:
+```html
+<section class="placar">
+    <h3 class="center">Placar</h3>
+        <table class="centered bordered">
+            <thead>
+                <tr>
+                    <th>Usuário</th>
+                    <th>No. de palavras</th>
+                    <th>Remover</th>
+                </tr>
+            </thead>
+        <tbody>
+            <tr>
+                <td>Usuario Exemplo</td>
+                <td>99</td>
+                <td>
+                    <a href="#">
+                        <i class="small material-icons">delete</i>
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+```
+
+Para esse botão aparecer também nas pontuações que serão adicionadas futuramente, precisamos alterar a nossa função novaLinha() para adicionar o botão de remoção na linha também. No main.js, adicionamos:
+```javascript
+function novaLinha(usuario,palavras) {
+    var linha = $("<tr>");
+    var colunaUsuario = $("<td>").text(usuario);
+    var colunaPalavras = $("<td>").text(palavras);
+    var colunaRemover = $("<td>");
+
+    var link = $("<a>").attr("href","#");
+    var icone = $("<i>").addClass("small").addClass("material-icons").text("delete");
+
+    linha.append(colunaUsuario);
+    linha.append(colunaPalavras);
+
+    return linha;
+}
+```
+
+Utilizamos algumas já conhecidas funções do jQuery para montar a sua estrutura semelhante a do HTML. Falta posicionar o ícone dentro do link, o link dentro da coluna, e a coluna dentro da linha:
+
+```javascript
+function novaLinha(usuario,palavras) {
+    var linha = $("<tr>");
+    var colunaUsuario = $("<td>").text(usuario);
+    var colunaPalavras = $("<td>").text(palavras);
+    var colunaRemover = $("<td>");
+
+    var link = $("<a>").attr("href","#");
+    var icone = $("<i>").addClass("small").addClass("material-icons").text("delete");
+
+    // Ícone dentro do <a>
+    link.append(icone);
+
+    // <a> dentro do <td>
+    colunaRemover.append(link);
+
+    // Os três <td> dentro do <tr>
+    linha.append(colunaUsuario);
+    linha.append(colunaPalavras);
+    linha.append(colunaRemover);
+
+    return linha;
+}
+```
+
+### Removendo a linha
+Agora que o botão de remoção já é adicionado corretamente em cada linha, precisamos fazer com que ele remova a linha quando for clicado. Para isso criamos a função removeLinha():
+
+```javascript
+function removeLinha() {
+
+}
+```
+Se clicarmos no ícone de remoção, iremos perceber que a página salta para o topo. Para remover esse comportamento, vamos utilizar a função preventDefault(). Vamos alterar nosso evento para receber um parâmetro que permita usá-la:
+```javascript
+function removeLinha(event) {
+    event.preventDefault();
+}
+```
+Agora, para remover um elemento do HTML , vamos utilizar a função com nome semelhante do jQuery, a remove():
+```javascript
+function removeLinha(event) {
+    event.preventDefault();
+    $(this).remove();
+}
+```
+
+Como elementos comuns do HTML não têm acesso às funções do jQuery, empoderamo-os com as funções do objeto jQuery, envolvendo-os com a função jQuery.
+Agora precisamos chamar a função removeLinha() para o clique de todos os botões que estão dentro das linhas criadas, podendo utilizar o find() para achá-los:
+```javascript
+
+function inserePlacar() {
+    var corpoTabela = $(".placar").find("tbody");
+    var usuario = "Seu-nome"
+    var numPalavras = $("#contador-palavras").text();
+
+    var linha = novaLinha(usuario,numPalavras);
+    linha.find(".botao-remover").click(removeLinha);
+
+    corpoTabela.append(linha);
+}
+```
+
+Se clicarmos no ícone da lixeira, veremos que somente a mesma sumiu! Isto acontece pois estamos chamando a função remove() na tag <a>, que é quem foi clicada! Para remover a linha inteira, vamos olhar a estrutura HTML, e ver que a tag <tr> é pai do pai da tag <a>. Para acessar o pai com o jQuery, utilizamos a função parent(). Logo, vamos chamá-la duas vezes na hora de remover:
+
+```javascript
+function removeLinha() {
+    event.preventDefault();
+    $(this).parent().parent().remove();
+}
+```
+
+Agora nossas linhas geradas pelo jogo podem ser deletadas normalmente! Podemos até mesmo remover as linhas que já vinham por padrão no nosso placar, deixando apenas as que foram geradas pelo usuário!
+
+### Mãos na massa: Organizando o nosso código
+
+Para organizar melhor o nosso código JavaScript, vamos separar as suas responsabilidades em arquivos diferentes.
+O que é referente ao placar do nosso jogo, colocaremos em um outro arquivo, chamado placar.js. Ou seja, moveremos as funções inserePlacar, novaLinha e removeLinha:
+```javascript
+function inserePlacar() {
+    var corpoTabela = $(".placar").find("tbody");
+    var usuario = "Seu-nome"
+    var numPalavras = $("#contador-palavras").text();
+
+    var linha = novaLinha(usuario, numPalavras);
+    linha.find(".botao-remover").click(removeLinha);
+
+    corpoTabela.append(linha);
+}
+
+function novaLinha(usuario, palavras) {
+    var linha = $("<tr>");
+    var colunaUsuario = $("<td>").text(usuario);
+    var colunaPalavras = $("<td>").text(palavras);
+    var colunaRemover = $("<td>");
+
+    var link = $("<a>").addClass("botao-remover").attr("href", "#");
+    var icone = $("<i>").addClass("small").addClass("material-icons").text("delete");
+
+    link.append(icone);
+
+    colunaRemover.append(link);
+
+    linha.append(colunaUsuario);
+    linha.append(colunaPalavras);
+    linha.append(colunaRemover);
+
+    return linha;
+}
+
+function removeLinha() {
+    event.preventDefault();
+    $(this).parent().parent().remove();
+}
+```
+
+Daqui para frente, cada parte do nosso código ficará em um arquivo próprio, melhorando a organização da nossa aplicação!
+
+### Projeto Final do Curso 
+
+Você pode fazer o download completo do projeto deste módulo AQUI. 
+
+https://s3.amazonaws.com/caelum-online-public/jquery-alura-typer/stages/jquery-modulo-1-final.zip
+
+
 
 [Voltar ao Índice](#indice)
 
