@@ -36,3 +36,5 @@ application/logs/*
 
 
 material_do_curso/*
+.idea/inspectionProfiles/
+.idea/workspace.xml
